@@ -61,7 +61,10 @@ class MemberData(models.Model):
         self.save()
 
     def __str__(self):
-        return self.First_Name +" "+self.Last_Name
+        try:
+            return str(self.First_Name) + " " + str(self.Last_Name)
+        except:
+            return str(self.First_Name) + " " + str(self.Mobile_Number)
 
 class Subscription(models.Model):
     Member = models.ForeignKey(MemberData, on_delete=models.CASCADE,null=True, blank=True, related_name="Member_subscription")
