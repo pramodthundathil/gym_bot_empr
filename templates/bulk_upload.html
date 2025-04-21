@@ -1,0 +1,58 @@
+{% extends "index.html" %}
+{% load static %}
+{% static "images" as baseurl %}
+
+{% block content %}
+
+<div class="main-panel">
+    <div class="content-wrapper pb-0">
+        {% for message in messages  %}
+
+        <div class="alert {{message.tags}} alert-dismissible fade show " style="position:fixed;top:100px;z-index:1;" role="alert">
+            <strong>Information!</strong> {{message}}
+            <button type="button" class="btn btn-close mdi mdi-close text-xxl" data-bs-dismiss="alert"
+                aria-label="Close"></button>
+        </div>
+        {% endfor %}
+        <div class="container">
+            <div class="row">
+                <div class="col-md-8 offset-md-2">
+                    <div class="card">
+                        <div class="card-header">
+                            <h3>Bulk Upload Members</h3>
+                        </div>
+                        <div class="card-body">
+                            {% if messages %}
+                                {% for message in messages %}
+                                    <div class="alert alert-{{ message.tags }}">
+                                        {{ message }}
+                                    </div>
+                                {% endfor %}
+                            {% endif %}
+                            
+                            <form method="post" enctype="multipart/form-data">
+                                {% csrf_token %}
+                                {{ form.as_p }}
+                                <button type="submit" class="btn btn-primary">Upload</button>
+                            </form>
+                            
+                            <div class="mt-4">
+                                <h4>Instructions:</h4>
+                                <p>Please format your Excel file with the following columns:</p>
+                                <ul>
+                                    <li><strong>Required fields:</strong> First_Name, Mobile_Number, Registration_Date</li>
+                                    <li><strong>Optional fields:</strong> Last_Name, Date_Of_Birth, Gender, Discount, Special_Discount, 
+                                        Email, Address, Medical_History, Active_status, Access_status, Access_Token_Id</li>
+                                </ul>
+                                <p>Note: Photo and ID uploads cannot be processed through bulk upload.</p>
+                                <a href="{%url 'download_template' %}" class="btn btn-outline-secondary">Download Template</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+{% endblock %}

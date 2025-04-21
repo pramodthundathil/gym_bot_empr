@@ -1,0 +1,689 @@
+{% extends "index.html" %}
+{% load static %}
+
+{% block content %}
+<style>
+  .dropdown-item.active {
+    background-color: #007bff;
+    color: white;
+  }
+
+  .list-card {
+    position: relative;
+    /* display: inline-block; */
+    /* border-bottom: 1px dotted black; */
+  }
+
+  .list-card .tooltiptext {
+    visibility: hidden;
+    width: auto;
+    background-color: black;
+    color: #fff;
+    text-align: center;
+    border-radius: 6px;
+    padding: 10px 0;
+
+    /* Position the tooltip */
+    position: absolute;
+    z-index: 1;
+    top: -5px;
+    left: 70%;
+  }
+
+  .list-card:hover .tooltiptext {
+    visibility: visible;
+  }
+</style>
+
+<div class="main-panel">
+  <div class="content-wrapper pb-0">
+    {% for message in messages %}
+
+    <div class="alert {{message.tags}} alert-dismissible fade show " style="position:fixed;top:100px;z-index:1;"
+      role="alert">
+      <strong>Information!</strong> {{message}}
+      <button type="button" class="btn btn-close mdi mdi-close text-xxl" data-bs-dismiss="alert"
+        aria-label="Close"></button>
+    </div>
+    {% endfor %}
+    <div class="page-header flex-wrap">
+      <h3 class="mb-0"> Payments <span class="pl-0 h6 pl-sm-2 text-muted d-inline-block">Payment Details</span>
+      </h3>
+      <div class="d-flex">
+        <a href="{%url 'AllPayments' %}" type="button" class="btn btn-sm bg-white btn-icon-text border">
+          <i class="mdi mdi-cash-multiple"></i> Go to All Payments </a>
+        <!-- <button type="button" class="btn btn-sm bg-white btn-icon-text border ml-3">
+                    <i class="mdi mdi-printer btn-icon-prepend"></i> Print </button> -->
+        <button type="button" data-bs-toggle="modal" data-bs-target="#staticBackdrop"
+          class="btn btn-sm ml-3 btn-success"> <i class="mdi mdi-plus text-lg"></i> Add Payment </button>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-xl-8 col-sm-6 grid-margin stretch-card">
+        <div class="card">
+          <div class="card-body px-0 overflow-auto">
+            <h4 class="card-title pl-4">All Payments</h4>
+            <div class="table-responsive">
+              <table class="table">
+                <thead class="bg-light">
+                  <tr>
+                    <th>Customer</th>
+                    <th>Payment Amount</th>
+                    <th>Mode Of Payment</th>
+                    <th>Date</th>
+                    <th>Status</th>
+                    <th>Action</th>
+                    <th>View</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for i in pay %}
+
+
+                  <tr>
+                    <td>
+                      <div class="d-flex align-items-center">
+                        {% if i.Member.Photo %}
+                              <img src="{{i.Member.Photo.url}}" alt="image"  id="photoclient"/>
+                              {% else %}
+                              <img src="{% static 'assets/images/faces/face1.jpg' %}" alt="image" id="photoclient"/>
+                              {% endif %}
+                        <b>{{forloop.counter}}. </b>
+                        <div class="table-user-name ml-3">
+                          <p class="mb-0 font-weight-medium"> {{i.Member}} </p>
+                          {% if i.Payment_Balance > 0 %}
+                          <small class="text-warning"> Payment Partially Done</small>
+
+
+                          {% else %}
+                          <small> Payment done</small>
+                          {% endif %}
+
+                        </div>
+                      </div>
+                    </td>
+                    <td>
+                      ₹ {{i.Amount}}
+                      {% if i.Payment_Balance > 0 %}
+                      <br>
+                      <small class="text-danger">Payment Balance ₹ {{i.Payment_Balance}}</small>
+                      {% endif %}
+
+                    </td>
+                    <td>{{i.Mode_of_Payment}}</td>
+                    <td>
+                      {{i.Payment_Date}}
+                    </td>
+                    <td>
+                      {% if i.Payment_Balance > 0 %}
+                      <a data-bs-toggle="modal" data-bs-target="#AddBalancePayment{{i.id}}" data-bs-toggle="tooltip"
+                      data-bs-placement="top" class="btn btn-outline-info">Make Balance Payment</a>
+                      {% else %}
+                      <div class="badge badge-inverse-success"> Completed </div>
+                      {% if i.balance_payment.exists %}
+                      <a href="{%url 'get_balance_receipt' i.balance_payment.all.0.id %}" class="badge badge-info">Balance Payment Made Get receipt</a>
+                      {% endif %}
+                      {% endif %}
+                    </td>
+                    <td>
+                      <a href="{%url 'ReceiptGenerate' i.id %}" target="_blank" class="btn btn-outline-warning">Get
+                        Receipt</a>
+                      <a data-bs-toggle="modal" data-bs-toggle="tooltip" data-bs-placement="top" title="delete"
+                        data-bs-target="#staticBackdropsubperitype" class="btn btn-outline-danger btn-sm"><i
+                          class="mdi mdi-delete" style="font-size: 15px;"></i></a>
+                      {% if request.user.groups.all.0.name == "admin" %}
+                      <a href="{%url 'EditPayment' i.id %}" class="btn btn-inverse-info btn-icon"
+                        data-bs-toggle="tooltip" data-bs-placement="top" title="Edit"><i style="font-size: x-large;"
+                          class="bi bi-pencil-square"></i></a>
+                      {% endif %}
+                    </td>
+                    <td>
+                      <a href="{%url 'MembersSingleView' i.Member.id %}" class="btn btn-outline-info btn-sm">View
+                        Member</a>
+                    </td>
+                  </tr>
+                  <!-- Modal Sub Period delete -->
+                  <div class="modal fade" id="staticBackdropsubperitype" data-bs-backdrop="static"
+                    data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+                    <div class="modal-dialog">
+                      <div class="modal-content">
+
+                        <div class="modal-body">
+                          Do you want To delete Payment ?
+                        </div>
+                        <div class="modal-footer">
+                          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">No</button>
+                          <a href="{%url 'DeletePayment' i.id %}" type="button" class="btn btn-danger">Yes</a>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                       <!-- Modal partially paid -->
+                       <div class="modal fade" id="AddBalancePayment{{i.id}}" data-bs-backdrop="static"
+                       data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+                       <div class="modal-dialog">
+                         <div class="modal-content">
+                           <div class="modal-header">
+                             <h5 class="modal-title" id="staticBackdropLabel">Balance Payment</h5>
+                             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">x</button>
+                           </div>
+                           <div class="modal-body">
+                             <form action="{%url 'make_balance_payment' i.id %}" method="post">
+                               {% csrf_token %}
+                               <h3>Balance Payment: <span class="text-danger">{{i.Payment_Balance}}</span></h3>
+                               <input type="text" name="balance" disabled class="form-control" placeholder="Enter Amount" value="{{i.Payment_Balance}}">
+                               <br>
+                               <button type="submit" class="btn btn-primary">Add Payment</button>
+                             </form>
+                             
+                           </div>
+                           <div class="modal-footer">
+                             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">No</button>
+                            
+                           </div>
+                         </div>
+                       </div>
+                     </div>
+                  {% endfor %}
+
+                </tbody>
+              </table>
+            </div>
+            <a class="text-black mt-3 d-block pl-4" href="{%url 'AllPayments' %}">
+              <span class="font-weight-medium h6">View all Payments</span>
+              <i class="mdi mdi-chevron-right"></i></a>
+          </div>
+        </div>
+      </div>
+      <div class="col-xl-4 col-md-6 grid-margin stretch-card">
+        <div class="card card-invoice">
+          <div class="card-body">
+            <h4 class="card-title pb-3">New Payments</h4>
+            {% for i in pay %}
+
+            <div class="list-card">
+              <span class="tooltiptext">Latest Payment Information</span>
+
+              <div class="row align-items-center">
+                <div class="col-7 col-sm-8">
+                  <div class="row align-items-center">
+                    <div class="col-sm-4">
+                     
+                      <b>{{forloop.counter}}. </b>
+                    </div>
+                    <div class="col-sm-8 pr-0 pl-sm-0">
+                      <span>Date: {{i.Payment_Date}}</span>
+                      <h6 class="mb-1 mb-sm-0">{{i.Member}}</h6>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-5 col-sm-4">
+                  <div class="d-flex pt-1 align-items-center">
+                    <div class="reload-outer bg-info">
+                      <!-- <i class="mdi mdi-reload"></i> -->
+                    </div>
+                    <div class="dropdown dropleft pl-1 pt-3">
+                      <div id="dropdownMenuButton2" data-toggle="dropdown" role="button" aria-haspopup="true"
+                        aria-expanded="false">
+                        <!-- <p><i class="mdi mdi-dots-vertical"></i></p> -->
+                      </div>
+                      <div class="dropdown-menu" aria-labelledby="dropdownMenuButton2">
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            {% endfor %}
+
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous"> -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
+      integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous">
+      </script>
+    <div class="">
+
+      <div class="page-header flex-wrap">
+        <h3 class="mb-0"> P <span class="pl-0 h6 pl-sm-2 text-muted d-inline-block">Payment Category</span>
+        </h3>
+        <div class="d-flex">
+          <!-- <button type="button" class="btn btn-sm bg-white btn-icon-text border">
+                <i class="mdi mdi-email btn-icon-prepend"></i> Email </button>
+              <button type="button" class="btn btn-sm bg-white btn-icon-text border ml-3">
+                <i class="mdi mdi-printer btn-icon-prepend"></i> Print </button>
+              <button type="button" class="btn btn-sm ml-3 btn-success"> Add Member </button> -->
+        </div>
+      </div>
+      <ul class="nav nav-tabs" id="myTab" role="tablist">
+        <li class="nav-item" role="presentation">
+          <button class="nav-link active" id="home-tab" data-bs-toggle="tab" data-bs-target="#home" type="button"
+            role="tab" aria-controls="home" aria-selected="true">Due Today</button>
+        </li>
+        <li class="nav-item" role="presentation">
+          <button class="nav-link" id="profile-tab" data-bs-toggle="tab" data-bs-target="#profile" type="button"
+            role="tab" aria-controls="profile" aria-selected="false">Past Due</button>
+        </li>
+        <li class="nav-item" role="presentation">
+          <button class="nav-link" id="contact-tab" data-bs-toggle="tab" data-bs-target="#contact" type="button"
+            role="tab" aria-controls="contact" aria-selected="false">Upcomming</button>
+        </li>
+      </ul>
+      <div class="tab-content" id="myTabContent">
+        <div class="tab-pane fade show active" id="home" role="tabpanel" aria-labelledby="home-tab">
+          <div class="row">
+            <div class="col-xl-12 col-sm-6 grid-margin stretch-card">
+              <div class="card" style="height: 500px;">
+                <div class="card-body px-0 overflow-auto">
+                  <h4 class="card-title pl-4">Payments</h4>
+                  <div class="table-responsive">
+                    <table class="table">
+                      <thead class="bg-light">
+                        <tr>
+                          <th>Member</th>
+                          <th>Amount</th>
+                          <th>Subscrption End Date</th>
+                          <th>Status</th>
+                          <th>View</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {% for sub in sub_today %}
+                        <tr>
+                          <td>
+                            <div class="d-flex align-items-center">
+                              
+                              <b>{{forloop.counter}}. </b>
+                              <div class="table-user-name ml-3">
+                                <p class="mb-0 font-weight-medium"> {{sub.Member.First_Name}} {{sub.Member.Last_Name}}
+                                </p>
+                                {% if sub.Payment_Status == False %}
+                                <small class="text-danger"> Payment Not Completed</small>
+                                {% else %}
+                                <small> Payment Done</small>
+
+                                {% endif %}
+                              </div>
+                            </div>
+                          </td>
+                          <td>{{sub.Amount}}</td>
+                          <td>
+                            {{sub.Subscription_End_Date}}
+                          </td>
+                          <td>
+                            {% if sub.Payment_Status == False %}
+                            <div class="badge badge-inverse-danger"> Inactive </div>
+                            {% else %}
+                            <div class="badge badge-inverse-success"> Active </div>
+                            {% endif %}
+                          </td>
+                          <td>
+                            <a href="{%url 'MembersSingleView' sub.Member.id %}" class="btn btn-outline-info">View</a>
+                          </td>
+                        </tr>
+                        {% endfor %}
+
+                      </tbody>
+                    </table>
+                  </div>
+                  <a class="text-black mt-3 d-block pl-4" href="#">
+                    <!-- <span class="font-weight-medium h6">View all Members</span>
+                    <i class="mdi mdi-chevron-right"></i></a> -->
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="tab-pane fade" id="profile" role="tabpanel" aria-labelledby="profile-tab">
+          <div class="row">
+            <div class="col-xl-12 col-sm-6 grid-margin stretch-card">
+              <div class="card" style="height: 500px;">
+                <div class="card-body px-0 overflow-auto">
+                  <h4 class="card-title pl-4">Payments</h4>
+                  <div class="table-responsive">
+                    <table class="table">
+                      <thead class="bg-light">
+                        <tr>
+                          <th>Member</th>
+                          <th>Amount</th>
+                          <th>Subscrption End Date</th>
+                          <th>Status</th>
+                          <th>View</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {% for sub in sub_past %}
+                        <tr>
+                          <td>
+                            <div class="d-flex align-items-center">
+                              
+                              <b>{{forloop.counter}}. </b>
+                              <div class="table-user-name ml-3">
+                                <p class="mb-0 font-weight-medium"> {{sub.Member.First_Name}} {{sub.Member.Last_Name}}
+                                </p>
+                                {% if sub.Payment_Status == False %}
+                                <small class="text-danger"> Payment Not Completed</small>
+                                {% else %}
+                                <small> Payment Done</small>
+
+                                {% endif %}
+                              </div>
+                            </div>
+                          </td>
+                          <td>{{sub.Amount}}</td>
+                          <td>
+                            {{sub.Subscription_End_Date}}
+                          </td>
+                          <td>
+                            {% if sub.Payment_Status == False %}
+                            <div class="badge badge-inverse-danger"> Inactive </div>
+                            {% else %}
+                            <div class="badge badge-inverse-success"> Active </div>
+                            {% endif %}
+                          </td>
+                          <td>
+                            <a href="{%url 'MembersSingleView' sub.Member.id %}" class="btn btn-outline-info">View</a>
+                          </td>
+                        </tr>
+                        {% endfor %}
+
+                      </tbody>
+                    </table>
+                  </div>
+                  <!-- <a class="text-black mt-3 d-block pl-4" href="#">
+                    <span class="font-weight-medium h6">View all Members</span>
+                    <i class="mdi mdi-chevron-right"></i></a> -->
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="tab-pane fade mt-0" id="contact" role="tabpanel" aria-labelledby="contact-tab">
+          <div class="row">
+            <div class="col-xl-12 col-sm-6 grid-margin stretch-card">
+              <div class="card" style="height: 500px;">
+                <div class="card-body px-0 overflow-auto">
+                  <h4 class="card-title pl-4">Payments</h4>
+                  <div class="table-responsive">
+                    <table class="table">
+                      <thead class="bg-light">
+                        <tr>
+                          <th>Member</th>
+                          <th>Amount</th>
+                          <th>Subscrption End Date</th>
+                          <th>Status</th>
+                          <th>View</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {% for sub in sub_Upcoming %}
+                        <tr>
+                          <td>
+                            <div class="d-flex align-items-center">
+                             
+                              <b>{{forloop.counter}}. </b>
+                              <div class="table-user-name ml-3">
+                                <p class="mb-0 font-weight-medium"> {{sub.Member.First_Name}} {{sub.Member.Last_Name}}
+                                </p>
+                                {% if sub.Payment_Status == False %}
+                                <small class="text-danger"> Payment Not Completed</small>
+                                {% else %}
+                                <small> Payment Done</small>
+
+                                {% endif %}
+                              </div>
+                            </div>
+                          </td>
+                          <td>{{sub.Amount}}</td>
+                          <td>
+                            {{sub.Subscription_End_Date}}
+                          </td>
+                          <td>
+                            {% if sub.Payment_Status == False %}
+                            <div class="badge badge-inverse-danger"> Inactive </div>
+                            {% else %}
+                            <div class="badge badge-inverse-success"> Active </div>
+                            {% endif %}
+                          </td>
+                          <td>
+                            <a href="{%url 'MembersSingleView' sub.Member.id %}" class="btn btn-outline-info">View</a>
+                          </td>
+                        </tr>
+                        {% endfor %}
+
+                      </tbody>
+                    </table>
+                  </div>
+                  <!-- <a class="text-black mt-3 d-block pl-4" href="#">
+                    <span class="font-weight-medium h6">View all Members</span>
+                    <i class="mdi mdi-chevron-right"></i></a> -->
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- models for payent add -->
+
+    <!-- Button trigger modal -->
+
+    <!-- Modal -->
+    <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+      aria-labelledby="staticBackdropLabel" aria-hidden="true">
+      <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="staticBackdropLabel">Add Payment</h5>
+            <button type="button" class="btn btn-close mdi mdi-close text-xxl" data-bs-dismiss="modal"
+              aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <div class="col-12 grid-margin">
+              <div class="card">
+                <div class="card-body">
+                  <!-- <h4 class="card-title">Horizontal Two column</h4> -->
+                  <form class="form-sample memberadd-form" method="post" action="{%url 'AddNewPayment' %}"
+                    enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <p class="card-description">Add Payment</p>
+                    
+
+                    <div class="row">
+
+                      <div class="col-md-12">
+                        <div class="form-group row">
+                          <label class="col-sm-3 col-form-label">Please Select Member to Add Payment:</label>
+
+                          <div class="col-sm-12">
+                            <input type="text" id="memberSearch" class="form-control" autocomplete="off"
+                              placeholder="Search member...">
+                            <input type="hidden" name="member" id="selectedMemberId" required>
+                            <div id="memberResults" class="dropdown-menu w-100" style="display: none;"></div>
+                          </div>
+
+                        </div>
+                      </div>
+
+
+                    </div>
+                    <!-- <div class="row">
+                      <div class="col-md-10">
+                        <div class="form-group row">
+                          <label class="col-sm-4 col-form-label">Extend Subscription <sup>(Optional)</sup>:</label>
+                          <div class="col-sm-8">
+                            <input type="date" name="sub_extendate" class="form-control">
+                          </div>
+                        </div>
+                      </div>
+                    </div> -->
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            <button type="submit" class="btn btn-primary">Proceed With Payment</button>
+          </div>
+          </form>
+
+        </div>
+      </div>
+    </div>
+    <footer class="footer">
+      <div class="d-sm-flex justify-content-center justify-content-sm-between">
+        <span class="text-muted d-block text-center text-sm-left d-sm-inline-block">Copyright © red defend
+          computers</span>
+        <span class="float-none float-sm-right d-block mt-1 mt-sm-0 text-center"> Developed By <a
+            href="https://reddefend.ae/" target="_blank">Byteboot Techno Solutions Pvt Ltd</a></span>
+      </div>
+    </footer>
+  </div>
+</div>
+<!-- </div> -->
+<!-- </div> -->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    const memberSearch = document.getElementById('memberSearch');
+    const memberResults = document.getElementById('memberResults');
+    const selectedMemberId = document.getElementById('selectedMemberId');
+
+    let currentFocus = -1;
+
+    // Search functionality with AJAX
+    let searchTimeout;
+    memberSearch.addEventListener('input', function () {
+      const searchTerm = this.value;
+
+      // Clear previous timeout and reset focus
+      clearTimeout(searchTimeout);
+      currentFocus = -1;
+
+      if (searchTerm.length < 2) {
+        memberResults.style.display = 'none';
+        return;
+      }
+
+      // Set a small delay to prevent too many requests
+      searchTimeout = setTimeout(() => {
+        fetch(`/members/search_members/?term=${encodeURIComponent(searchTerm)}`)
+          .then(response => response.json())
+          .then(data => {
+            displayResults(data);
+          })
+          .catch(error => console.error('Error:', error));
+      }, 300);
+    });
+
+    // Display filtered results
+    function displayResults(results) {
+      memberResults.innerHTML = '';
+
+      if (results.length === 0) {
+        memberResults.innerHTML = '<div class="dropdown-item">No members found</div>';
+        memberResults.style.display = 'block';
+        return;
+      }
+
+      results.forEach(member => {
+        const item = document.createElement('a');
+        item.className = 'dropdown-item';
+        item.href = '#';
+        item.textContent = member.name;
+        item.dataset.id = member.id;
+        item.addEventListener('click', function (e) {
+          e.preventDefault();
+          selectItem(this);
+        });
+
+        memberResults.appendChild(item);
+      });
+
+      memberResults.style.display = 'block';
+    }
+
+    // Function to select an item from dropdown
+    function selectItem(item) {
+      memberSearch.value = item.textContent;
+      selectedMemberId.value = item.dataset.id;
+      memberResults.style.display = 'none';
+      memberSearch.focus();
+    }
+
+    // Add keyboard navigation
+    memberSearch.addEventListener('keydown', function (e) {
+      const items = memberResults.getElementsByClassName('dropdown-item');
+
+      if (!items.length) return;
+
+      // Down arrow
+      if (e.keyCode === 40) {
+        currentFocus++;
+        addActive(items);
+        e.preventDefault(); // Prevent cursor from moving to end of input
+      }
+      // Up arrow
+      else if (e.keyCode === 38) {
+        currentFocus--;
+        addActive(items);
+        e.preventDefault(); // Prevent cursor from moving to start of input
+      }
+      // Enter key
+      else if (e.keyCode === 13) {
+        e.preventDefault();
+        if (currentFocus > -1) {
+          if (items[currentFocus]) {
+            selectItem(items[currentFocus]);
+          }
+        }
+      }
+    });
+
+    // Function to add active class to item
+    function addActive(items) {
+      if (!items) return false;
+
+      // Remove active from all items
+      removeActive(items);
+
+      // Adjust the focus if needed
+      if (currentFocus >= items.length) currentFocus = 0;
+      if (currentFocus < 0) currentFocus = (items.length - 1);
+
+      // Add active class
+      items[currentFocus].classList.add('active');
+
+      // Scroll into view if needed
+      items[currentFocus].scrollIntoView({ block: 'nearest' });
+    }
+
+    // Function to remove active class from items
+    function removeActive(items) {
+      for (let i = 0; i < items.length; i++) {
+        items[i].classList.remove('active');
+      }
+    }
+
+    // Close dropdown when clicking outside
+    document.addEventListener('click', function (e) {
+      if (e.target !== memberSearch && e.target !== memberResults) {
+        memberResults.style.display = 'none';
+      }
+    });
+
+    // Show dropdown when focusing on search input
+    memberSearch.addEventListener('focus', function () {
+      if (this.value.length >= 2) {
+        memberResults.style.display = 'block';
+      }
+    });
+  });
+</script>
+
+{% endblock %}

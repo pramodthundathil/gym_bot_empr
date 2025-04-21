@@ -1,0 +1,327 @@
+{% extends "index.html" %}
+{% load static %}
+{% static "images" as baseurl %}
+
+
+{% block content %}
+
+<style>
+  .memberadd-form textarea {
+    width: 100%;
+    border: 1px solid #ebedf2;
+  }
+
+  .list-card {
+    position: relative;
+    /* display: inline-block; */
+    /* border-bottom: 1px dotted black; */
+  }
+
+  .list-card .tooltiptext {
+    visibility: hidden;
+    width: 120px;
+    background-color: black;
+    color: #fff;
+    text-align: center;
+    border-radius: 6px;
+    padding: 10px 0;
+
+    /* Position the tooltip */
+    position: absolute;
+    z-index: 1;
+    top: -5px;
+    left: 10%;
+  }
+
+  .list-card:hover .tooltiptext {
+    visibility: visible;
+  }
+</style>
+
+<div class="main-panel">
+  <div class="content-wrapper pb-0">
+    {% for message in messages %}
+
+    <div class="alert {{message.tags}} alert-dismissible fade show " style="position:fixed;top:100px;z-index:1;"
+      role="alert">
+      <strong>Information!</strong> {{message}}
+      <button type="button" class="btn btn-close mdi mdi-close text-xxl" data-bs-dismiss="alert"
+        aria-label="Close"></button>
+    </div>
+    {% endfor %}
+    <div class="page-header flex-wrap">
+      <h3 class="mb-0"> Member Details <span class="pl-0 h6 pl-sm-2 text-muted d-inline-block">Members.</span>
+      </h3>
+      <div class="d-flex">
+        <a href="{%url 'member_bulk_upload' %}" type="button" class="btn btn-sm bg-white btn-icon-text border ml-3">
+          <i class="mdi mdi-printer btn-icon-prepend"></i> Member Bulk Upload </a>
+        <button type="button" data-bs-toggle="modal" data-bs-target="#staticBackdrop"
+          class="btn btn-sm ml-3 btn-success"> <i class="mdi mdi-plus text-lg"></i> Add Member </button>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-xl-8 col-sm-6 grid-margin stretch-card">
+        <div class="card" style="padding: 20px !important;">
+          <div class="card-body px-0 overflow-auto">
+            <h4 class="card-title pl-4">Members</h4>
+            <div class="table-responsive">
+              <table class="table">
+                <thead class="bg-light">
+                  <tr>
+                    <th>Member</th>
+                    <th>Subscrption Type</th>
+                    <th>Subscrption End Date</th>
+                    <th>Status</th>
+                    <th>View</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for sub in subscribers %}
+                  <tr>
+                    <td>
+                      <div class="d-flex align-items-center">
+                        {% if sub.Member.Photo %}
+                              <img src="{{sub.Member.Photo.url}}" alt="image"  id="photoclient"/>
+                              {% else %}
+                              <img src="{% static 'assets/images/faces/face1.jpg' %}" alt="image" id="photoclient"/>
+                              {% endif %}
+                        <b>{{forloop.counter}}. </b>
+                        <div class="table-user-name ml-3">
+                          <p class="mb-0 font-weight-medium"> {{sub.Member.First_Name}} {{sub.Member.Last_Name}} </p>
+                          {% if sub.Payment_Status == False %}
+                          <small class="text-danger"> Payment Not Completed</small>
+                          {% elif sub.partial_payment == True %}
+                          <small class="text-warning"> Payment Partially Done</small>
+                          {% else %}
+                          <small> Payment Done</small>
+
+                          {% endif %}
+                        </div>
+                      </div>
+                    </td>
+                    <td>{{sub.Type_Of_Subscription}}</td>
+                    <td>
+                      {{sub.Subscription_End_Date}}
+                    </td>
+                    <td>
+                      {% if sub.Payment_Status == False %}
+                      <div class="badge badge-inverse-danger"> Inactive </div>
+                      {% else %}
+                      <div class="badge badge-inverse-success"> Active </div>
+                      {% endif %}
+                    </td>
+                    <td>
+                      <a href="{%url 'MembersSingleView' sub.Member.id %}" class="btn btn-outline-info">View</a>
+                    </td>
+                  </tr>
+                  {% endfor %}
+
+                </tbody>
+              </table>
+            </div>
+            <a class="text-black mt-3 d-block pl-4" href="{%url 'AllMembers' %}">
+              <span class="font-weight-medium h6">View all Members</span>
+              <i class="mdi mdi-chevron-right"></i></a>
+          </div>
+        </div>
+      </div>
+      <div class="col-xl-4 col-md-6 grid-margin stretch-card">
+        <div class="card card-invoice">
+          <div class="card-body">
+            <h4 class="card-title pb-3">New Members</h4>
+
+            {% for i in Trainee %}
+            <div class="list-card">
+              <span class="tooltiptext">View Member</span>
+              <div class="row align-items-center">
+                <div class="col-7 col-sm-8">
+                  <div class="row align-items-center">
+                    <div class="col-sm-4">
+                      {% if i.Photo %}
+                              <img src="{{i.Photo.url}}" alt="image"  id="photoclient"/>
+                              {% else %}
+                              <img src="{% static 'assets/images/faces/face1.jpg' %}" alt="image" id="photoclient"/>
+                              {% endif %}
+                    </div>
+                    <div class="col-sm-8 pr-0 pl-sm-0">
+                      <span>{{i.Registration_Date}}</span>
+                      <h6 class="mb-1 mb-sm-0">{{i.First_Name}} {{i.Last_Name}}</h6>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-5 col-sm-4">
+                  <div class="d-flex pt-1 align-items-center">
+                    <div class="reload-outer bg-info">
+                      <i class="mdi mdi-reload"></i>
+                    </div>
+                    <div class="dropdown dropleft pl-1 pt-3">
+                      <div id="dropdownMenuButton2" data-toggle="dropdown" role="button" aria-haspopup="true"
+                        aria-expanded="false">
+                        <p><i class="mdi mdi-dots-vertical"></i></p>
+                      </div>
+                      <div class="dropdown-menu" aria-labelledby="dropdownMenuButton2">
+                        <a class="dropdown-item" href="{%url 'MembersSingleView' i.id %}">View Member</a>
+
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            {% endfor %}
+
+
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
+      integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous">
+      </script>
+
+    <!-- Modal -->
+    <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+      aria-labelledby="staticBackdropLabel" aria-hidden="true">
+      <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="staticBackdropLabel">Add Members</h5>
+            <button type="button" class="btn btn-close mdi mdi-close text-xxl" data-bs-dismiss="modal"
+              aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <div class="col-12 grid-margin">
+              <div class="card">
+                <div class="card-body">
+                  <!-- <h4 class="card-title">Horizontal Two column</h4> -->
+                  <form class="form-sample memberadd-form" method="post" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <p class="card-description">Personal Info</p>
+                    <div class="row">
+                      {% for field in form %}
+                      <div class="col-md-6">
+                        <div class="form-group row">
+                          <label class="col-sm-3 col-form-label">{{field.label}}</label>
+                          <div class="col-sm-9">
+                            {% if field.name == 'Photo' %}
+                            <!-- <input type="file" required class="form-control" name="profile_pic" id="profilePicInput" accept="image/*" capture="camera" style="display:none;"> -->
+                            {{field}}
+                            <div>
+                              <button type="button" id="uploadButton" class="btn btn-primary mb-3">Take Profile
+                                Picture</button>
+                              <video id="video" width="320" height="240" autoplay style="display:none;"></video><br>
+                              <button id="capture" style="display:none;" class="btn btn-success mb-3">Capture
+                                Photo</button>
+                              <canvas id="canvas" width="320" height="240" style="display:none;"></canvas>
+                              <img id="capturedImage" src="" alt="Captured Image" style="display:none;"><br>
+                              <button id="recapture" style="display:none;" class="btn btn-warning">Recapture</button>
+                            </div>
+                            {% else %}
+                            {{ field }}
+                            {% endif %}
+
+                          </div>
+                        </div>
+                      </div>
+                      {% endfor %}
+                    </div>
+                    <p class="card-description"></p>
+                    <p lass="card-description">Subscription Info</p>
+                    <div class="row">
+                      {% for field in sub_form %}
+                      <div class="col-md-6">
+                        <div class="form-group row">
+                          <label class="col-sm-3 col-form-label">{{field.label}}</label>
+                          <div class="col-sm-9">
+                            {{field}}
+                          </div>
+                        </div>
+                      </div>
+                      {% endfor %}
+                    </div>
+
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            <button type="submit" class="btn btn-primary">Submit</button>
+          </div>
+          </form>
+
+        </div>
+      </div>
+    </div>
+
+    <!-- model dialog end  -->
+
+    <footer class="footer">
+      <div class="d-sm-flex justify-content-center justify-content-sm-between">
+        <span class="text-muted d-block text-center text-sm-left d-sm-inline-block">Copyright © Byteboot Techno
+          Solutions Pvt Ltd</span>
+        <span class="float-none float-sm-right d-block mt-1 mt-sm-0 text-center"> Developed By <a
+            href="https://www.byteboot.in/" target="_blank">Byteboot Techno Solutions Pvt Ltd</a></span>
+      </div>
+    </footer>
+  </div>
+</div>
+
+<script>
+  document.getElementById('uploadButton').addEventListener('click', function () {
+    // Show video and capture button
+    document.getElementById('video').style.display = 'block';
+    document.getElementById('capture').style.display = 'block';
+
+    // Access camera
+    navigator.mediaDevices.getUserMedia({ video: true })
+      .then(function (stream) {
+        const video = document.getElementById('video');
+        video.srcObject = stream;
+        video.play();
+      })
+      .catch(function (err) {
+        console.log("Error accessing camera: " + err);
+      });
+  });
+
+  document.getElementById('capture').addEventListener('click', function () {
+    const video = document.getElementById('video');
+    const canvas = document.getElementById('canvas');
+    const context = canvas.getContext('2d');
+
+    // Capture image from video
+    context.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+    // Convert canvas image to file
+    canvas.toBlob(function (blob) {
+      const file = new File([blob], "profile_pic.png", { type: "image/png" });
+
+      // Set file to Django form input
+      const dataTransfer = new DataTransfer();
+      dataTransfer.items.add(file);
+      document.getElementById('profilePic').files = dataTransfer.files;
+
+    }, "image/png");
+
+    // Show captured image
+    document.getElementById('capturedImage').src = canvas.toDataURL("image/png");
+    document.getElementById('capturedImage').style.display = 'block';
+
+    // Hide video and capture button, show recapture button
+    video.style.display = 'none';
+    document.getElementById('capture').style.display = 'none';
+    document.getElementById('recapture').style.display = 'block';
+  });
+
+  document.getElementById('recapture').addEventListener('click', function () {
+    document.getElementById('video').style.display = 'block';
+    document.getElementById('capture').style.display = 'block';
+    document.getElementById('capturedImage').style.display = 'none';
+    document.getElementById('recapture').style.display = 'none';
+  });
+</script>
+
+{% endblock %}
