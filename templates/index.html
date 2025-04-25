@@ -35,16 +35,16 @@
 <body>
   <div class="container-scroller">
     <nav class="sidebar sidebar-offcanvas" id="sidebar">
-      <div class="text-center sidebar-brand-wrapper d-flex align-items-center">
+      <div class="text-center sidebar-brand-wrapper d-flex align-items-center bg-dark">
         <a class="sidebar-brand brand-logo" href="{%url 'Home' %}"><img
-            src="{%static 'assets/images/Logo_Reveal_Slides.png' %}" alt="logo" style="object-fit: contain;" /></a>
+            src="{%static 'assets/images/Logo_Reveal_Slides.png' %}" alt="logo" style="object-fit: contain; margin-top: -30px;" /></a>
         <a class="sidebar-brand brand-logo-mini pl-4 pt-3" href="{%url 'Home' %}"><img
             src="{%static 'assets/images/Logo_Reveal_Slides.png' %}" alt="logo" /></a>
       </div>
       <ul class="nav">
         <li class="nav-item nav-profile">
           <a href="#" class="nav-link">
-            <div class="nav-profile-image">
+            <div class="nav-profile-image" >
               <img src="{%static 'assets/images/faces/face1.jpg' %}" alt="profile" />
               <span class="login-status online"></span>
               <!--change to offline or busy as needed-->
@@ -628,10 +628,9 @@
 
         <footer class="footer">
           <div class="d-sm-flex justify-content-center justify-content-sm-between">
-            <span class="text-muted d-block text-center text-sm-left d-sm-inline-block">Copyright © red defend
-              computers</span>
+            <span class="text-muted d-block text-center text-sm-left d-sm-inline-block">Copyright © Byteboot Techno Solutions Pvt Ltd</span>
             <span class="float-none float-sm-right d-block mt-1 mt-sm-0 text-center"> Developed By <a
-                href="https://reddefend.ae/" target="_blank">Byteboot Techno Solutions Pvt Ltd</a></span>
+                href="https://www.byteboot.in/" target="_blank">Byteboot Techno Solutions Pvt Ltd</a></span>
           </div>
         </footer>
       </div>
@@ -664,9 +663,9 @@
     <!-- page-body-wrapper ends -->
   </div>
   <script>
-    const apiUrl = 'https://api.openweathermap.org/data/2.5/weather?q=dubai&units=metric&appid=076465d2e663be277c6d13a3991ca3b6';
+    const apiUrl = 'https://api.openweathermap.org/data/2.5/weather?q=kochi&units=metric&appid=076465d2e663be277c6d13a3991ca3b6';
     const currentDate = new Date();
-    const apiWeeKurl = "https://api.openweathermap.org/data/2.5/forecast?q=dubai&units=metric&appid=076465d2e663be277c6d13a3991ca3b6"
+    const apiWeeKurl = "https://api.openweathermap.org/data/2.5/forecast?q=kochi&units=metric&appid=076465d2e663be277c6d13a3991ca3b6"
     // Get the current date and time components
     const year = currentDate.getFullYear();
     const month = currentDate.getMonth() + 1; // Months are zero-based, so add 1
