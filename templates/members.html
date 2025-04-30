@@ -66,33 +66,32 @@
           <div class="card-body px-0 overflow-auto">
             <h4 class="card-title pl-4">Members</h4>
             <div class="table-responsive">
-              <table class="table">
+              <table class="table" id="memberTable">
                 <thead class="bg-light">
                   <tr>
+                    <th>Sl no</th>
                     <th>Member</th>
-                    <th>Subscrption Type</th>
+                    <th>Phone Number</th>
                     <th>Subscrption End Date</th>
                     <th>Status</th>
                     <th>View</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {% for sub in subscribers %}
+                  {% for sub in Trainee  %}  
                   <tr>
+                    <th>{{forloop.counter}}</th>
                     <td>
                       <div class="d-flex align-items-center">
-                        {% if sub.Member.Photo %}
-                              <img src="{{sub.Member.Photo.url}}" alt="image"  id="photoclient"/>
-                              {% else %}
-                              <img src="{% static 'assets/images/faces/face1.jpg' %}" alt="image" id="photoclient"/>
-                              {% endif %}
-                        <b>{{forloop.counter}}. </b>
+                        {% if sub.Photo %}
+                        <img src="{{sub.Photo.url}}" alt="image"  id="photoclient"/>
+                        {% else %}
+                        <img src="{% static 'assets/images/faces/face1.jpg' %}" alt="image" id="photoclient"/>
+                        {% endif %}
                         <div class="table-user-name ml-3">
-                          <p class="mb-0 font-weight-medium"> {{sub.Member.First_Name}} {{sub.Member.Last_Name}} </p>
-                          {% if sub.Payment_Status == False %}
+                          <p class="mb-0 font-weight-medium"> {{sub.First_Name}} {{sub.Last_Name}} </p>
+                          {% if sub.Active_status == False %}
                           <small class="text-danger"> Payment Not Completed</small>
-                          {% elif sub.partial_payment == True %}
-                          <small class="text-warning"> Payment Partially Done</small>
                           {% else %}
                           <small> Payment Done</small>
 
@@ -100,23 +99,26 @@
                         </div>
                       </div>
                     </td>
-                    <td>{{sub.Type_Of_Subscription}}</td>
                     <td>
-                      {{sub.Subscription_End_Date}}
+                      {{sub.Mobile_Number}}
+                    </td>
+               
+                    <td>
+                      {{sub.Registration_Date}}
                     </td>
                     <td>
-                      {% if sub.Payment_Status == False %}
+                      {% if sub.Active_status == False %}
                       <div class="badge badge-inverse-danger"> Inactive </div>
                       {% else %}
                       <div class="badge badge-inverse-success"> Active </div>
                       {% endif %}
                     </td>
                     <td>
-                      <a href="{%url 'MembersSingleView' sub.Member.id %}" class="btn btn-outline-info">View</a>
+                        <a href="{%url 'MembersSingleView' sub.id %}" class="btn btn-outline-info">View</a>
                     </td>
                   </tr>
                   {% endfor %}
-
+                  
                 </tbody>
               </table>
             </div>

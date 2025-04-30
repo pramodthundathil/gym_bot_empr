@@ -870,7 +870,11 @@ def DeletePayment(request,pk):
 @login_required(login_url='SignIn')
 def ExtendAccessToGate(request,pk):
     member = MemberData.objects.get(id = pk)
-    subscrib = Subscription.objects.get(Member = member)
+    try:
+        subscrib = Subscription.objects.get(Member = member)
+    except:
+        messages.error(request,"This member has no subscription to extend access please add subscription")
+        return redirect(MembersSingleView, pk)
     if request.method == "POST":
         extention = request.POST['exend']
         access = AccessToGate.objects.get(Member = member)
@@ -898,7 +902,7 @@ def BlockAccess(request,pk):
 
 @login_required(login_url='SignIn')
 def AllMembers(request):
-    members = MemberData.objects.all()[::-1]
+    members = MemberData.objects.all().order_by('-id')
     return render(request, "allmembers.html",{"member":members})
 
 @login_required(login_url='SignIn')
