@@ -470,8 +470,13 @@ def AddNewPayment(request):
             }
             return render(request,"paymentscreen.html",context)
         except:
-            messages.error(request, "Member is not exists")
-            return redirect("Payments")
+            try:
+                mid = request.POST["member"]
+                messages.error(request, "This member Has no subscription Please add subscription to make Payment ")
+                return redirect(MembersSingleView, pk = mid)
+            except:
+                messages.error(request, "Member is not exists")
+                return redirect("Payments")
     else:
         messages.info(request, "Please select member to continue...")
         return redirect("Payments")
@@ -481,15 +486,20 @@ def AddNewPayment(request):
 def AddNewPaymentFromMember(request,pk):
 
     member = MemberData.objects.get(id = pk)
-    Sub = Subscription.objects.get(Member = member)
+    try:
+        Sub = Subscription.objects.get(Member = member)
 
-    context = {
-        "member":member,
-        "sub":Sub,
-        "discounted":Sub.Amount - (Sub.Amount*member.Discount)/100
-    }
-    return render(request,"paymentscreen.html",context)
-    
+        context = {
+            "member":member,
+            "sub":Sub,
+            "discounted":Sub.Amount - (Sub.Amount*member.Discount)/100
+        }
+        return render(request,"paymentscreen.html",context)
+    except:
+        messages.error(request, "This member Has no subscription Please add subscription to make Payment ")
+        return redirect(ChangeSubscription, pk = pk)
+
+        
 
 @login_required(login_url='SignIn')
 def PostNewPayment(request,pk):
