@@ -40,7 +40,11 @@
                         <tr>
                           <td>
                             <div class="d-flex align-items-center">
-                              <img src="{{sub.Photo.url}}" alt="image" />
+                              {% if sub.Photo %}
+                              <img src="{{sub.Photo.url}}" alt="image"  id="photoclient"/>
+                              {% else %}
+                              <img src="{% static 'assets/images/faces/face1.jpg' %}" alt="image" id="photoclient"/>
+                              {% endif %}
                               <div class="table-user-name ml-3">
                                 <p class="mb-0 font-weight-medium"> {{sub.First_Name}} {{sub.Last_Name}} </p>
                                 {% if sub.Payment_Status == False %}
