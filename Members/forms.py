@@ -31,7 +31,7 @@ class MemberAddForm(ModelForm):
             # "Date_Of_Birth":TextInput(attrs={"class":"form-control","type":"date","min":date}),
             "Mobile_Number":TextInput(attrs={"class":"form-control","type":"number"}),
             "Email":TextInput(attrs={"class":"form-control","type":"email"}),
-            "Registration_Date":TextInput(attrs={"class":"form-control","type":"date","max":date}),
+            "Registration_Date":TextInput(attrs={"class":"form-control","type":"date"}),
             # "Address":TextInput(attrs={"class":"form-control",'style': 'height: 3em !importent;'}),
             # "Medical_History":TextInput(attrs={"class":"form-control"}),
             "Photo":FileInput(attrs={"class":"form-control",'accept': 'image/*', 'capture':'camera', "id":"profilePic"}),
@@ -56,7 +56,7 @@ class SubscriptionAddForm(ModelForm):
             "Type_Of_Subscription":Select(attrs={"class":"form-control","required":"required"}),
             "Period_Of_Subscription":Select(attrs={"class":"form-control","required":"required"}),
             "Amount":TextInput(attrs={"class":"form-control","type":"number"}),
-            "Subscribed_Date":TextInput(attrs={"class":"form-control","type":"date","max":date}),
+            "Subscribed_Date":TextInput(attrs={"class":"form-control","type":"date"}),
             # "Subscription_End_Date":TextInput(attrs={"class":"form-control","type":"date","min":date}),
             "Batch":Select(attrs={"class":"form-control","required":"required"}),
 
