@@ -242,17 +242,20 @@ def MembersSingleView(request,pk):
 def UpdateMember(request,pk):
     member = MemberData.objects.get(id = pk)
     if request.method == "POST":
-        fname = request.POST["fname"]
+        fname = request.POST.get("fname")
         lname = request.POST["lname"]
         email = request.POST["email"]
         phone = request.POST["phone"]
-        dob = request.POST["dob"]
+        # dob = request.POST.get("dob")
         address = request.POST["address"]
         medicahistory = request.POST["mhistory"]
 
         member.First_Name = fname
         member.Last_Name = lname
-        member.Date_Of_Birth = dob
+        # try:
+        #     member.Date_Of_Birth = dob
+        #     member.save()
+        # except:
         member.Mobile_Number = phone
         member.Email = email
         member.Address = address
