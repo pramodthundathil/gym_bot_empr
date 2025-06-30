@@ -52,7 +52,10 @@
     <div class="page-header flex-wrap">
       <h3 class="mb-0"> Member Details <span class="pl-0 h6 pl-sm-2 text-muted d-inline-block">Members.</span>
       </h3>
+
       <div class="d-flex">
+        <a href="{%url 'AllMembers' %}" type="button" class="btn btn-sm bg-white btn-icon-text border ml-3">
+           Go to all Member List </a>
         <a href="{%url 'member_bulk_upload' %}" type="button" class="btn btn-sm bg-white btn-icon-text border ml-3">
           <i class="mdi mdi-printer btn-icon-prepend"></i> Member Bulk Upload </a>
         <button type="button" data-bs-toggle="modal" data-bs-target="#staticBackdrop"
@@ -78,15 +81,15 @@
                   </tr>
                 </thead>
                 <tbody>
-                  {% for sub in Trainee  %}  
+                  {% for sub in Trainee %}
                   <tr>
                     <th>{{forloop.counter}}</th>
                     <td>
                       <div class="d-flex align-items-center">
                         {% if sub.Photo %}
-                        <img src="{{sub.Photo.url}}" alt="image"  id="photoclient"/>
+                        <img src="{{sub.Photo.url}}" alt="image" id="photoclient" />
                         {% else %}
-                        <img src="{% static 'assets/images/faces/face1.jpg' %}" alt="image" id="photoclient"/>
+                        <img src="{% static 'assets/images/faces/face1.jpg' %}" alt="image" id="photoclient" />
                         {% endif %}
                         <div class="table-user-name ml-3">
                           <p class="mb-0 font-weight-medium"> {{sub.First_Name}} {{sub.Last_Name}} </p>
@@ -102,7 +105,7 @@
                     <td>
                       {{sub.Mobile_Number}}
                     </td>
-               
+
                     <td>
                       {{sub.Registration_Date}}
                     </td>
@@ -114,11 +117,11 @@
                       {% endif %}
                     </td>
                     <td>
-                        <a href="{%url 'MembersSingleView' sub.id %}" class="btn btn-outline-info">View</a>
+                      <a href="{%url 'MembersSingleView' sub.id %}" class="btn btn-outline-info">View</a>
                     </td>
                   </tr>
                   {% endfor %}
-                  
+
                 </tbody>
               </table>
             </div>
@@ -141,10 +144,10 @@
                   <div class="row align-items-center">
                     <div class="col-sm-4">
                       {% if i.Photo %}
-                              <img src="{{i.Photo.url}}" alt="image"  id="photoclient"/>
-                              {% else %}
-                              <img src="{% static 'assets/images/faces/face1.jpg' %}" alt="image" id="photoclient"/>
-                              {% endif %}
+                      <img src="{{i.Photo.url}}" alt="image" id="photoclient" />
+                      {% else %}
+                      <img src="{% static 'assets/images/faces/face1.jpg' %}" alt="image" id="photoclient" />
+                      {% endif %}
                     </div>
                     <div class="col-sm-8 pr-0 pl-sm-0">
                       <span>{{i.Registration_Date}}</span>

@@ -53,7 +53,20 @@ urlpatterns = [
 
     path("monthwise_calculation_of_payment",views.monthwise_calculation_of_payment,name="monthwise_calculation_of_payment"),
 
-    path('members/bulk-upload/', views.MemberBulkUploadView.as_view(), name='member_bulk_upload')
+    path('members/bulk-upload/', views.MemberBulkUploadView.as_view(), name='member_bulk_upload'),
+
+    # new reports 
+    # Main report page
+    path('reports/unpaid-members/', views.unpaid_members_report, name='unpaid_members_report'),
+    
+    # AJAX endpoint for member details
+    path('reports/member-detail/<int:member_id>/', views.member_detail_ajax, name='member_detail_ajax'),
+    
+    # Update member status
+    path('reports/update-member-status/<int:member_id>/', views.update_member_status, name='update_member_status'),
+    
+    # Export CSV
+    path('reports/export-unpaid-csv/', views.export_unpaid_members_csv, name='export_unpaid_csv'),
     
 
     

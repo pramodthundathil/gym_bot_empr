@@ -588,10 +588,13 @@ def make_balance_payment(request, pk):
     payment = Payment.objects.get(id=pk)
     balance = payment.Payment_Balance
     if request.method == "POST":
+        date = request.POST.get("date_on_payment")
         payment.Payment_Status = True
         payment.Payment_Balance = 0
         payment.save() 
-        balance_bill = BalancePayment.objects.create(payment = payment,Amount = balance)
+        balance_bill = BalancePayment.objects.create(payment = payment,Amount = balance,Payment_Date = date)
+        balance_bill.save()
+        balance_bill.Payment_Date = date
         balance_bill.save()
 
         income = Income.objects.create(perticulers = f"Payment from {payment.Member} by {payment.Mode_of_Payment}",amount = balance)
@@ -704,7 +707,7 @@ def get_balance_receipt(request, pk):
     member = payment.Member
     amount = balance_.Amount
     payid = pk
-    payment_date = payment.Payment_Date
+    payment_date = balance_.Payment_Date
     
     try:
         sub_start = payment.Subscription_ID.Subscribed_Date
@@ -1443,3 +1446,166 @@ class MemberBulkUploadView(View):
         
         return render(request, self.template_name, {'form': form})
 
+
+
+# new reports 
+
+
+# views.py
+from django.shortcuts import render
+from django.http import JsonResponse, HttpResponse
+from django.db.models import Q
+from django.template.loader import render_to_string
+import csv
+from io import StringIO
+from .models import MemberData, Subscription
+
+def unpaid_members_report(request):
+    """
+    Display members with unpaid subscriptions
+    """
+    # Get members who have at least one unpaid subscription
+    unpaid_members = MemberData.objects.filter(
+        Member_subscription__Payment_Status=False
+    ).distinct().select_related().prefetch_related('Member_subscription')
+    
+    # Add subscription details to each member
+    members_data = []
+    for member in unpaid_members:
+        unpaid_subscriptions = member.Member_subscription.filter(Payment_Status=False)
+        total_unpaid_amount = sum(sub.Amount for sub in unpaid_subscriptions)
+        
+        members_data.append({
+            'member': member,
+            'unpaid_subscriptions': unpaid_subscriptions,
+            'total_unpaid_amount': total_unpaid_amount,
+            'unpaid_count': unpaid_subscriptions.count()
+        })
+    
+    context = {
+        'members_data': members_data,
+        'total_members': len(members_data),
+        'total_unpaid_amount': sum(data['total_unpaid_amount'] for data in members_data)
+    }
+    
+    return render(request, 'unpaid_members_report.html', context)
+
+def member_detail_ajax(request, member_id):
+    """
+    Get detailed member information via AJAX
+    """
+    try:
+        member = MemberData.objects.get(id=member_id)
+        unpaid_subscriptions = member.Member_subscription.filter(Payment_Status=False)
+        all_subscriptions = member.Member_subscription.all()
+        
+        data = {
+            'success': True,
+            'member': {
+                'id': member.id,
+                'first_name': member.First_Name,
+                'last_name': member.Last_Name or '',
+                'mobile_number': member.Mobile_Number,
+                'email': member.Email or '',
+                'address': member.Address or '',
+                'registration_date': member.Registration_Date.strftime('%Y-%m-%d') if member.Registration_Date else '',
+                'active_status': member.Active_status,
+                'access_status': member.Access_status,
+            },
+            'unpaid_subscriptions': [
+                {
+                    'id': sub.id,
+                    'type': str(sub.Type_Of_Subscription),
+                    'period': str(sub.Period_Of_Subscription),
+                    'amount': sub.Amount,
+                    'subscribed_date': sub.Subscribed_Date.strftime('%Y-%m-%d'),
+                    'end_date': sub.Subscription_End_Date.strftime('%Y-%m-%d') if sub.Subscription_End_Date else '',
+                    'batch': str(sub.Batch) if sub.Batch else '',
+                    'partial_payment': sub.partial_payment
+                }
+                for sub in unpaid_subscriptions
+            ],
+            'total_unpaid': sum(sub.Amount for sub in unpaid_subscriptions),
+            'total_subscriptions': all_subscriptions.count(),
+            'paid_subscriptions': all_subscriptions.filter(Payment_Status=True).count()
+        }
+        
+        return JsonResponse(data)
+    
+    except MemberData.DoesNotExist:
+        return JsonResponse({'success': False, 'error': 'Member not found'})
+
+def export_unpaid_members_csv(request):
+    """
+    Export unpaid members report to CSV
+    """
+    response = HttpResponse(content_type='text/csv')
+    response['Content-Disposition'] = 'attachment; filename="unpaid_members_report.csv"'
+    
+    writer = csv.writer(response)
+    writer.writerow([
+        'Member ID', 'First Name', 'Last Name', 'Mobile Number', 'Email',
+        'Total Unpaid Amount', 'Unpaid Subscriptions Count', 'Registration Date',
+        'Active Status', 'Access Status'
+    ])
+    
+    unpaid_members = MemberData.objects.filter(
+        Member_subscription__Payment_Status=False
+    ).distinct()
+    
+    for member in unpaid_members:
+        unpaid_subscriptions = member.Member_subscription.filter(Payment_Status=False)
+        total_unpaid = sum(sub.Amount for sub in unpaid_subscriptions)
+        
+        writer.writerow([
+            member.id,
+            member.First_Name,
+            member.Last_Name or '',
+            member.Mobile_Number,
+            member.Email or '',
+            total_unpaid,
+            unpaid_subscriptions.count(),
+            member.Registration_Date.strftime('%Y-%m-%d') if member.Registration_Date else '',
+            'Active' if member.Active_status else 'Inactive',
+            'Has Access' if member.Access_status else 'No Access'
+        ])
+    
+    return response
+
+def update_member_status(request, member_id):
+    """
+    Update member active status and payment status
+    """
+    if request.method == 'POST':
+        try:
+            member = MemberData.objects.get(id=member_id)
+            action = request.POST.get('action')
+            
+            if action == 'update_status':
+                member.update_active_status()
+                return JsonResponse({
+                    'success': True, 
+                    'message': 'Member status updated successfully',
+                    'new_status': member.Active_status
+                })
+            
+            elif action == 'mark_paid':
+                subscription_id = request.POST.get('subscription_id')
+                if subscription_id:
+                    subscription = Subscription.objects.get(id=subscription_id, Member=member)
+                    subscription.Payment_Status = True
+                    subscription.save()
+                    member.update_active_status()  # Update member status after payment
+                    
+                    return JsonResponse({
+                        'success': True,
+                        'message': 'Subscription marked as paid',
+                        'member_status': member.Active_status
+                    })
+            
+            return JsonResponse({'success': False, 'error': 'Invalid action'})
+            
+        except (MemberData.DoesNotExist, Subscription.DoesNotExist):
+            return JsonResponse({'success': False, 'error': 'Record not found'})
+    
+    return JsonResponse({'success': False, 'error': 'Invalid request method'})

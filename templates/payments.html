@@ -173,6 +173,8 @@
                              <form action="{%url 'make_balance_payment' i.id %}" method="post">
                                {% csrf_token %}
                                <h3>Balance Payment: <span class="text-danger">{{i.Payment_Balance}}</span></h3>
+                               <label for="">Date Of payment</label>
+                               <input type="date" name="date_on_payment" class="form-control" required>
                                <input type="text" name="balance" disabled class="form-control" placeholder="Enter Amount" value="{{i.Payment_Balance}}">
                                <br>
                                <button type="submit" class="btn btn-primary">Add Payment</button>
