@@ -262,15 +262,21 @@ def SignOut(request):
 def Search(request):
     if request.method == "POST":
         key = request.POST["key"]
-        members1 = MemberData.objects.filter(First_Name__contains = key)
-        members2 = MemberData.objects.filter(Last_Name__contains= key)
-        list(members1).extend(list(members2))
-        member = list(set(members1))
+        members1 = MemberData.objects.filter(First_Name__contains=key)
+        members2 = MemberData.objects.filter(Last_Name__contains=key)
+        members3 = MemberData.objects.filter(Mobile_Number__contains=key)
+        
+        # Combine all querysets
+        all_members = list(members1) + list(members2) + list(members3)
+        
+        # Remove duplicates
+        member = list(set(all_members))
+        
         print(member)
         context = {
-            "member":member
+            "member": member
         }
-        return render(request, "search.html",context)
+        return render(request, "search.html", context)
     return render(request, "search.html")
 
 def ViewAllActivities(request):
