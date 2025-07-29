@@ -47,12 +47,13 @@
                     <td>
                       <div class="d-flex align-items-center">
                         {% if i.Member.Photo %}
-                        <img src="{{i.Member.Photo.url}}" alt="image"  id="photoclient"/>
+                        <img src="{{i.Member.Photo.url}}" alt="image" id="photoclient" />
                         {% else %}
-                        <img src="{% static 'assets/images/faces/face1.jpg' %}" alt="image" id="photoclient"/>
+                        <img src="{% static 'assets/images/faces/face1.jpg' %}" alt="image" id="photoclient" />
                         {% endif %}
                         <div class="table-user-name ml-3">
-                          <p class="mb-0 font-weight-medium"> {{i.Member}} <span style="display: none;">{{i.Member.Mobile_Number}}</span>  </p>
+                          <p class="mb-0 font-weight-medium"> {{i.Member}} <span
+                              style="display: none;">{{i.Member.Mobile_Number}}</span> </p>
                           {% if i.Payment_Balance > 0 %}
                           <small class="text-warning"> Payment Partially Done</small>
 
@@ -77,23 +78,25 @@
                     <td>
                       {% if i.Payment_Balance > 0 %}
                       <a data-bs-toggle="modal" data-bs-target="#AddBalancePayment{{i.id}}" data-bs-toggle="tooltip"
-                      data-bs-placement="top" class="btn btn-outline-info">Make Balance Payment</a>
+                        data-bs-placement="top" class="btn btn-outline-info">Make Balance Payment</a>
                       {% else %}
                       <div class="badge badge-inverse-success"> Completed </div>
-                      {% if i.balance_payment.exists %}
-                      <a href="{%url 'get_balance_receipt' i.balance_payment.all.0.id %}" class="badge badge-info">Balance Payment Made Get receipt</a>
-                      {% endif %}
+                      <!-- {% if i.balance_payment.exists %}
+                      <a href="{%url 'get_balance_receipt' i.balance_payment.all.0.id %}"
+                        class="badge badge-info">Balance Payment Made Get receipt</a>
+                      {% endif %} -->
                       {% endif %}
                     </td>
                     <td>
 
-                      
-                      <a href="{%url 'ReceiptGenerate' i.id %}" target="_blank" class="btn btn-outline-warning">Get
+
+                      <a data-bs-target="#Receipt{{i.id}}" data-bs-toggle="modal" class="btn btn-outline-warning">Get
                         Receipt</a>
 
-                      <a data-bs-toggle="modal" data-bs-target="#staticBackdropsubperitype{{i.id}}" data-bs-toggle="tooltip"
-                        data-bs-placement="top" title="delete" class="btn btn-outline-danger btn-sm"><i
-                          class="mdi mdi-delete" style="font-size: 15px;"></i></a>
+                      <a data-bs-toggle="modal" data-bs-target="#staticBackdropsubperitype{{i.id}}"
+                        data-bs-toggle="tooltip" data-bs-placement="top" title="delete"
+                        class="btn btn-outline-danger btn-sm"><i class="mdi mdi-delete"
+                          style="font-size: 15px;"></i></a>
                       {% if request.user.groups.all.0.name == "admin" %}
                       <a href="{%url 'EditPayment' i.id %}" class="btn btn-inverse-info btn-icon"
                         data-bs-toggle="tooltip" data-bs-placement="top" title="Edit"><i style="font-size: x-large;"
@@ -101,11 +104,11 @@
                       {% endif %}
                     </td>
                     <td>
-                      
-                        <a href="{%url 'MembersSingleView' i.Member.id %}" class="btn btn-outline-info btn-sm">View
-                          Member</a>
-                      </td>
-                   
+
+                      <a href="{%url 'MembersSingleView' i.Member.id %}" class="btn btn-outline-info btn-sm">View
+                        Member</a>
+                    </td>
+
                   </tr>
                   <!-- Modal partially paid -->
                   <div class="modal fade" id="AddBalancePayment{{i.id}}" data-bs-backdrop="static"
@@ -120,41 +123,97 @@
                           <form action="{%url 'make_balance_payment' i.id %}" method="post">
                             {% csrf_token %}
                             <h3>Balance Payment: <span class="text-danger">{{i.Payment_Balance}}</span></h3>
-                             <label for="">Date Of payment</label>
-                               <input type="date" name="date_on_payment" class="form-control" required>
-                            <input type="text" name="balance" disabled class="form-control" placeholder="Enter Amount" value="{{i.Payment_Balance}}">
+                            <br>
+                            <label for="">Date Of payment</label>
+                            <input type="date" name="date_on_payment" class="form-control" required>
+                            <br>
+                            Amount to pay
+                            <br><br>
+                            <input type="number" name="balance" required class="form-control" placeholder="Enter Amount"
+                              value="{{ i.Payment_Balance }}" max="{{ i.Payment_Balance }}" min="0" step="0.01">
                             <br>
                             <button type="submit" class="btn btn-primary">Add Payment</button>
                           </form>
-                          
+
                         </div>
                         <div class="modal-footer">
                           <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">No</button>
-                         
+
                         </div>
                       </div>
                     </div>
                   </div>
 
 
-                   <!-- Modal delete -->
-                   <div class="modal fade" id="staticBackdropsubperitype{{i.id}}" data-bs-backdrop="static"
-                   data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
-                   <div class="modal-dialog">
-                     <div class="modal-content">
+                  <!-- Modal Receipt  -->
+                  <div class="modal fade" id="Receipt{{i.id}}" data-bs-backdrop="static" data-bs-keyboard="false"
+                    tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+                    <div class="modal-dialog">
+                      <div class="modal-content">
+                        <div class="modal-header">
+                          <h5 class="modal-title" id="staticBackdropLabel">Your Receipts </h5>
+                          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">x</button>
+                        </div>
+                        <div class="modal-body">
+                          <h5>Receipts</h5>
+                          <div class="">
+                            <div class="d-flex" style="justify-content: space-around;">
 
-                       <div class="modal-body">
-                         Do you Want To delete payment ?
-                       </div>
-                       <div class="modal-footer">
-                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">No</button>
-                         <a href="{%url 'DeletePayment' i.id %}" type="button" class="btn btn-danger">Yes</a>
-                       </div>
-                     </div>
-                   </div>
-                 </div>
+                              <p>
+                                <a href="{%url 'ReceiptGenerate' i.id %}" target="_blank"
+                                  class="btn btn-outline-warning">Get
+                                  Receipt</a>
+                              </p>
+                            </div>
+                            {% if i.balance_payment.exists %}
 
-                  {% endfor %}
+                            <h5>
+                              <span class="text-danger">Balance Payment Receipt</span>
+                            </h5>
+                            <div class="">
+                              {% for j in i.balance_payment.all %}
+                              <div class="d-flex" style="justify-content: space-around;">
+                                <p>Date: {{ j.Payment_Date}}</p>
+                                <p>Amount: {{ j.Amount }}</p>
+                                <p>
+                                  <a href="{%url 'get_balance_receipt' j.id %}" class="btn btn-sm btn-info">Balance
+                                    Payment
+                                    Receipt</a>
+                                </p>
+                              </div>
+                              {% endfor %}
+
+                            </div>
+                            {% endif %}
+
+                          </div>
+                          <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">No</button>
+
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+
+                    <!-- Modal delete -->
+                    <div class="modal fade" id="staticBackdropsubperitype{{i.id}}" data-bs-backdrop="static"
+                      data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+                      <div class="modal-dialog">
+                        <div class="modal-content">
+
+                          <div class="modal-body">
+                            Do you Want To delete payment ?
+                          </div>
+                          <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">No</button>
+                            <a href="{%url 'DeletePayment' i.id %}" type="button" class="btn btn-danger">Yes</a>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    {% endfor %}
 
                 </tbody>
               </table>

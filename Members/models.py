@@ -61,8 +61,12 @@ class MemberData(models.Model):
         self.save()
 
     def __str__(self):
+        if self.Last_Name == None:
+            last_name = " "
+        else:
+            last_name = self.Last_Name
         try:
-            return str(self.First_Name) + " " + str(self.Last_Name)
+            return str(self.First_Name) + " " + str(last_name)
         except:
             return str(self.First_Name) + " " + str(self.Mobile_Number)
 

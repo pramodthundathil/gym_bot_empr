@@ -589,12 +589,19 @@ def make_balance_payment(request, pk):
     balance = payment.Payment_Balance
     if request.method == "POST":
         date = request.POST.get("date_on_payment")
-        payment.Payment_Status = True
-        payment.Payment_Balance = 0
+        amount = request.POST.get('balance')
+        
+        # payment.Payment_Balance = 0
         payment.save() 
-        balance_bill = BalancePayment.objects.create(payment = payment,Amount = balance,Payment_Date = date)
+        balance_bill = BalancePayment.objects.create(payment = payment,Amount = amount,Payment_Date = date)
         balance_bill.save()
         balance_bill.Payment_Date = date
+        payment.Payment_Balance -= float(amount)
+        if  payment.Payment_Balance > 0:
+            payment.Payment_Status = False
+        else:
+            payment.Payment_Status = True
+        payment.save() 
         balance_bill.save()
 
         income = Income.objects.create(perticulers = f"Payment from {payment.Member} by {payment.Mode_of_Payment}",amount = balance)
