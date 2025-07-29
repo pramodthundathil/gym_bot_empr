@@ -87,16 +87,35 @@ class Subscription(models.Model):
         return str(self.Type_Of_Subscription) + " " + str(self.Period_Of_Subscription)
     
 
+
+from django.core.exceptions import ValidationError
+
 class Payment(models.Model):
     Member = models.ForeignKey(MemberData, on_delete=models.CASCADE)
-    Subscription_ID = models.ForeignKey(Subscription, on_delete=models.SET_NULL,null=True,blank=True, related_name="Subscription_payment")
+    Subscription_ID = models.ForeignKey(Subscription, on_delete=models.SET_NULL, null=True, blank=True, related_name="Subscription_payment")
     Amount = models.IntegerField(null=True, blank=True)
-    Mode_of_Payment = models.CharField(max_length = 255, null=True, blank= True, choices = (("Cash","Cash"),("Bank Transfer","Bank Transfer"),("Card","Card")) )
-    Payment_Date = models.DateField(auto_now_add=False,null=True,blank=True)
+    Mode_of_Payment = models.CharField(max_length=255, null=True, blank=True, choices=(("Cash", "Cash"), ("Bank Transfer", "Bank Transfer"), ("Card", "Card")))
+    Payment_Date = models.DateField(auto_now_add=False, null=True, blank=True)
     Payment_Balance = models.FloatField(default=0)
     Payment_Status = models.BooleanField(default=False)
     Access_status = models.BooleanField(default=False)
     partial_payment = models.BooleanField(default=False)
+
+    def save(self, *args, **kwargs):
+        # If Payment_Balance is greater than 0, force Payment_Status to False
+        if self.Payment_Balance > 0:
+            self.Payment_Status = False
+        super().save(*args, **kwargs)
+
+    def clean(self):
+        # Validation to prevent Payment_Status from being True when Payment_Balance > 0
+        if self.Payment_Balance > 0 and self.Payment_Status:
+            raise ValidationError({
+                'Payment_Status': 'Payment status cannot be True when payment balance is greater than 0.'
+            })
+        super().clean()
+
+   
 
 
 
