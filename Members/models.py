@@ -82,6 +82,8 @@ class Subscription(models.Model):
     Payment_Status = models.BooleanField(default=False)
     partial_payment = models.BooleanField(default=False)
 
+    sub_disable = models.BooleanField(default=False)
+
 
     def __str__(self):
         return str(self.Type_Of_Subscription) + " " + str(self.Period_Of_Subscription)

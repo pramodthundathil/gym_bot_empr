@@ -80,12 +80,12 @@
               {% if member.Id_Upload %}
               <img class="survey-img mb-lg-3" src="{{member.Id_Upload.url}}" alt=""
                 style="width:60%;height:200px;display:block;margin:auto;object-fit:contain" />
-             
+
 
               {% else %}
               <div class="survey-img mb-lg-3" src="" alt=""
-              style="width:60%;height:200px;display:block;margin:auto;object-fit:contain">No ID Available</div>
-              
+                style="width:60%;height:200px;display:block;margin:auto;object-fit:contain">No ID Available</div>
+
               {% endif %}
             </div>
             <div class="d-flex flex-wrap border-bottom py-2 justify-content-center text-center">
@@ -283,17 +283,31 @@
                               Expied on: {{access.Validity_Date}}
                             </small>
                             {% endif %}
+                            <br><br>
+                            Subscription Status: {% if subscription.sub_disable == False %}
+                            <span class="badge bg-success">Active</span>{% else %}
+                            <span class="badge bg-danger">Inactive</span>
+                            {% endif %}
 
                         </div>
                         <br><br>
-                        <a href="{%url 'ChangeSubscription' member.id %}" class="btn btn-primary mr-2 text-white">Change
-                          Subscription </a><br><br>
+                        <a href="{%url 'ChangeSubscription' member.id %}" class=" mt-3 btn btn-primary mr-2 text-white">Change
+                          Subscription </a>
+
+
+                        {% if subscription.sub_disable == False %}
+                        <a href="{%url 'Disable_enable_subscription' subscription.id %}" class=" mt-3 btn btn-outline-danger mr-2">
+                          Disable Subscription </a><br><br>
+                        {% else %}
+                        <a href="{%url 'Disable_enable_subscription' subscription.id %}" class="mt-3 btn btn-outline-success mr-2 ">
+                          Enable Subscription </a><br><br>
+                        {% endif %}
                         <a data-bs-toggle="modal" data-bs-target="#staticBackdrop" class="btn btn-danger">Delete
                           Member</a>
                         <br><br>
-                        <a href="{%url 'AddNewPaymentFromMember' member.id %}" class="btn btn-outline-info">Add
+                        <a href="{%url 'AddNewPaymentFromMember' member.id %}" class=" mt-3 btn btn-outline-info">Add
                           Payment</a>
-                        <a data-bs-toggle="modal" data-bs-target="#staticBackdrop10" class="btn btn-info">View Payment
+                        <a data-bs-toggle="modal" data-bs-target="#staticBackdrop10" class="mt-3 btn btn-info">View Payment
                           History</a>
                         <!-- Subscription Chnage Model start  -->
 
@@ -394,7 +408,8 @@
                                                   <a href="{%url 'ReceiptGenerate' i.id %}" target="_blank"
                                                     class="btn btn-outline-warning">Get Receipt</a>
 
-                                                  <a href="{%url 'DeletePayment' i.id %}" onclick="return confirm('Are you want to delete ?')" title="delete"
+                                                  <a href="{%url 'DeletePayment' i.id %}"
+                                                    onclick="return confirm('Are you want to delete ?')" title="delete"
                                                     class="btn btn-outline-danger btn-sm"><i class="mdi mdi-delete"
                                                       style="font-size: 15px;"></i></a>
                                                   {% if request.user.groups.all.0.name == "admin" %}
@@ -450,7 +465,7 @@
                                                 </div>
                                               </div>
                                             </div> -->
-                          
+
                                               {% endfor %}
 
                                             </tbody>
@@ -473,9 +488,9 @@
                           </div>
                         </div>
                         <br><br>
-                        <a href="{%url 'ExtendAccessToGate' member.id %}" class="btn btn-outline-warning">Extend
+                        <a href="{%url 'ExtendAccessToGate' member.id %}" class="mt-3 btn btn-outline-warning">Extend
                           Access</a>
-                        <a href="{%url 'BlockAccess' member.id %}" class="btn btn-outline-dark">Block Access</a>
+                        <a href="{%url 'BlockAccess' member.id %}" class="mt-3 btn btn-outline-dark">Block Access</a>
 
 
                       </form>
@@ -490,7 +505,8 @@
       </div>
       <footer class="footer">
         <div class="d-sm-flex justify-content-center justify-content-sm-between">
-          <span class="text-muted d-block text-center text-sm-left d-sm-inline-block">Copyright © Byteboot Techno Solutions Pvt Ltd</span>
+          <span class="text-muted d-block text-center text-sm-left d-sm-inline-block">Copyright © Byteboot Techno
+            Solutions Pvt Ltd</span>
           <span class="float-none float-sm-right d-block mt-1 mt-sm-0 text-center"> Developed By <a
               href="https://reddefend.ae/" target="_blank">Byteboot Techno Solutions Pvt Ltd</a></span>
         </div>

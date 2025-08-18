@@ -476,7 +476,7 @@ def AddNewPayment(request):
             try:
                 mid = request.POST["member"]
                 messages.error(request, "This member Has no subscription Please add subscription to make Payment ")
-                return redirect(MembersSingleView, pk = mid)
+                return redirect(ChangeSubscription, pk = member.id)
             except:
                 messages.error(request, "Member is not exists")
                 return redirect("Payments")
@@ -927,9 +927,23 @@ def AllPayments(request):
 
 @login_required(login_url='SignIn')
 def FeePendingMembers(request):
-    subscribers = Subscription.objects.all()
+    subscribers = Subscription.objects.filter(sub_disable = False)
 
     return render(request,"feependingmembers.html",{"subscribers":subscribers})
+
+
+
+@login_required(login_url='SignIn')
+def Disable_enable_subscription(request, pk):
+    sub = Subscription.objects.get(id = pk)
+    if sub.sub_disable == True:
+        sub.sub_disable = False
+    else:
+        sub.sub_disable = True
+    sub.save()
+
+    messages.info(request,"subscription status changed...")
+    return redirect("MembersSingleView", pk = sub.Member.id)
 # Reports generation
 
 @login_required(login_url='SignIn')
