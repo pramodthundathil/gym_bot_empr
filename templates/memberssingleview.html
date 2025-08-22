@@ -294,7 +294,7 @@
                         <a href="{%url 'ChangeSubscription' member.id %}" class=" mt-3 btn btn-primary mr-2 text-white">Change
                           Subscription </a>
 
-
+                          {% if subscription %}
                         {% if subscription.sub_disable == False %}
                         <a href="{%url 'Disable_enable_subscription' subscription.id %}" class=" mt-3 btn btn-outline-danger mr-2">
                           Disable Subscription </a><br><br>
@@ -302,8 +302,11 @@
                         <a href="{%url 'Disable_enable_subscription' subscription.id %}" class="mt-3 btn btn-outline-success mr-2 ">
                           Enable Subscription </a><br><br>
                         {% endif %}
+
+                        {% endif %}
                         <a data-bs-toggle="modal" data-bs-target="#staticBackdrop" class="btn btn-danger">Delete
                           Member</a>
+
                         <br><br>
                         <a href="{%url 'AddNewPaymentFromMember' member.id %}" class=" mt-3 btn btn-outline-info">Add
                           Payment</a>
