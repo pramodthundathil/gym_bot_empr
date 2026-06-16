@@ -8,7 +8,7 @@
   <!-- Required meta tags -->
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
-  <title>EMPIRE-FITNESS</title>
+  <title>OYA-BABY</title>
   <link rel="stylesheet" href="{%static 'assets/vendors/mdi/css/materialdesignicons.min.css' %}" />
   <link rel="stylesheet" href="{%static 'assets/vendors/flag-icon-css/css/flag-icon.min.css' %}" />
   <link rel="stylesheet" href="{%static 'assets/vendors/css/vendor.bundle.base.css' %}" />
@@ -35,16 +35,16 @@
 <body>
   <div class="container-scroller">
     <nav class="sidebar sidebar-offcanvas" id="sidebar">
-      <div class="text-center sidebar-brand-wrapper d-flex align-items-center bg-dark">
+      <div class="text-center sidebar-brand-wrapper d-flex align-items-center">
         <a class="sidebar-brand brand-logo" href="{%url 'Home' %}"><img
-            src="{%static 'assets/images/Logo_Reveal_Slides.png' %}" alt="logo" style="object-fit: contain; margin-top: -30px;" /></a>
+            src="{%static 'assets/images/Logo_Reveal_Slides.png' %}" alt="logo" style="object-fit: contain;" /></a>
         <a class="sidebar-brand brand-logo-mini pl-4 pt-3" href="{%url 'Home' %}"><img
             src="{%static 'assets/images/Logo_Reveal_Slides.png' %}" alt="logo" /></a>
       </div>
       <ul class="nav">
         <li class="nav-item nav-profile">
           <a href="#" class="nav-link">
-            <div class="nav-profile-image" >
+            <div class="nav-profile-image">
               <img src="{%static 'assets/images/faces/face1.jpg' %}" alt="profile" />
               <span class="login-status online"></span>
               <!--change to offline or busy as needed-->
@@ -82,14 +82,6 @@
           </a>
         </li>
 
-        
-        <li class="nav-item">
-          <a class="nav-link" href="{%url 'monthwise_calculation_of_payment'%}">
-            <i class="mdi mdi-cash-multiple menu-icon"></i>
-            <span class="menu-title">Month Wise Calculation</span>
-          </a>
-        </li>
-        
         <li class="nav-item">
           <a class="nav-link" href="{%url 'income' %}">
             <i class="mdi mdi-cash-multiple menu-icon"></i>
@@ -212,13 +204,15 @@
                 {% for i in notification_payments %}
 
                 <a class="dropdown-item preview-item">
+                  {% if i.Member.Photo %}
                   <div class="preview-thumbnail">
-                    {% if i.Member.Photo %}
-                    <img src="{{i.Member.Photo.url}}" alt="image"  id="photoclient"/>
-                    {% else %}
-                    <img src="{% static 'assets/images/faces/face1.jpg' %}" alt="image" id="photoclient"/>
-                    {% endif %}
+                    <img src="{{i.Member.Photo.url}}" alt="" class="profile-pic" />
                   </div>
+                  {% else %}
+<div class="preview-thumbnail">
+                    <img src="/static/assets/images/PngItem_716892.png" alt="" class="profile-pic" />
+                  </div>
+                  {% endif %}
                   <div class="preview-item-content">
                     <p class="mb-0">{{i.Member}} <span class="text-small text-muted"><br> Payed ₹: {{i.Amount}} On
                         {{i.Payment_Date}}</span>
@@ -294,6 +288,10 @@
             </div>
 
             <div class="d-flex">
+              <button type="button" data-bs-toggle="modal" data-bs-target="#staticBackdrop"
+          class="btn mr-3 btn-sm ml-3 btn-success"> <i class="mdi mdi-plus text-lg"></i> Add Member </button>
+          <button type="button" data-bs-toggle="modal" data-bs-target="#staticBackdropPayment"
+          class="btn mr-3 btn-sm ml-3 btn-success"> <i class="mdi mdi-plus text-lg"></i> Add Payment </button>
               <a href="{%url 'AllMembers' %}" type="button" class="btn btn-sm bg-white btn-icon-text border">
                 <i class="mdi mdi-account-multiple btn-icon-prepend"></i> All Members </a>
               <a href="{%url 'Payments'%}" type="button" class="btn btn-sm bg-white btn-icon-text border ml-3">
@@ -431,10 +429,10 @@
                           <td>
                             <div class="d-flex align-items-center">
                               {% if sub.Member.Photo %}
-                              <img src="{{sub.Member.Photo.url}}" alt="image"  id="photoclient"/>
+                              <img src="{{sub.Member.Photo.url}}" alt="image" id="photoclient"/>
                               {% else %}
-                              <img src="{% static 'assets/images/faces/face1.jpg' %}" alt="image" id="photoclient"/>
-                              {% endif %}
+                              <img src="/static/assets/images/PngItem_716892.png" alt="image" id="photoclient"/>
+{% endif %}
                               <div class="table-user-name ml-3">
                                 <p class="mb-0 font-weight-medium"> {{sub.Member.First_Name}} {{sub.Member.Last_Name}}
                                 </p>
@@ -500,11 +498,11 @@
                         <tr>
                           <td>
                             <div class="d-flex align-items-center">
-                              {% if sub.Member.Photo %}
-                              <img src="{{sub.Member.Photo.url}}" alt="image"  id="photoclient"/>
+                               {% if sub.Member.Photo %}
+                              <img src="{{sub.Member.Photo.url}}" alt="image" id="photoclient"/>
                               {% else %}
-                              <img src="{% static 'assets/images/faces/face1.jpg' %}" alt="image" id="photoclient"/>
-                              {% endif %}
+                              <img src="/static/assets/images/PngItem_716892.png" alt="image" id="photoclient"/>
+{% endif %}
                               <div class="table-user-name ml-3">
                                 <p class="mb-0 font-weight-medium"> {{sub.Member.First_Name}} {{sub.Member.Last_Name}}
                                 </p>
@@ -550,6 +548,92 @@
                 </div>
               </div>
             </div>
+
+
+
+            <div class="col-xl-12 col-sm-12 grid-margin stretch-card">
+              <div class="card" style="max-height: 700px;">
+                <div class="card-body px-0 overflow-auto">
+                  
+                  <div class="card shadow mb-4">
+                    <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                        <h6 class="m-0 font-weight-bold text-primary">Income & Expense Comparison</h6>
+                        <div class="dropdown no-arrow">
+                            <select id="periodSelector" class="form-control form-control-sm">
+                                <option value="monthly">Monthly</option>
+                                <option value="weekly">Weekly</option>
+                                <option value="daily">Daily</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="chart-area">
+                            <canvas id="incomeExpenseChart"></canvas>
+                        </div>
+                        <hr>
+                        <div class="row text-center mt-4">
+                            <div class="col-md-4">
+                                <h4 class="small font-weight-bold">Total Income</h4>
+                                <div class="h3 mb-0 font-weight-bold text-success" id="totalIncome">₹ 0</div>
+                            </div>
+                            <div class="col-md-4">
+                                <h4 class="small font-weight-bold">Total Expense</h4>
+                                <div class="h3 mb-0 font-weight-bold text-danger" id="totalExpense">₹ 0</div>
+                            </div>
+                            <div class="col-md-4">
+                                <h4 class="small font-weight-bold">Net Profit</h4>
+                                <div class="h3 mb-0 font-weight-bold text-primary" id="totalProfit">₹ 0</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                </div>
+              </div>
+            </div>
+
+
+            <div class="col-xl-12 col-sm-12 grid-margin stretch-card">
+              <div class="card" style="max-height: 700px;">
+                <div class="card-body px-0 overflow-auto">
+
+                  <div class="card shadow mb-4">
+                    <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                        <h6 class="m-0 font-weight-bold text-primary">Payment Mode Analysis</h6>
+                        <div class="dropdown no-arrow">
+                            <select id="paymentPeriodSelector" class="form-control form-control-sm">
+                                <option value="monthly">Monthly</option>
+                                <option value="weekly">Weekly</option>
+                                <option value="daily">Daily</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="chart-area">
+                            <canvas id="paymentModeChart"></canvas>
+                        </div>
+                        <hr>
+                        <div class="row text-center mt-4">
+                            <div class="col-12">
+                                <h4 class="small font-weight-bold">Payment Distribution</h4>
+                                <div class="progress mb-4" id="paymentDistribution">
+                                    <!-- Will be populated by JavaScript -->
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row text-center" id="paymentSummary">
+                            <!-- Will be populated by JavaScript -->
+                        </div>
+                    </div>
+                </div>
+                
+                  
+
+                </div>
+              </div>
+            </div>
+
+
+
           </div>
           <div class="row">
             <div class="col-xl-8 grid-margin stretch-card">
@@ -626,11 +710,160 @@
           </div>
         </div>
 
+        <!-- Modal member add -->
+    <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+    aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="staticBackdropLabel">Add Members</h5>
+          <button type="button" class="btn btn-close mdi mdi-close text-xxl" data-bs-dismiss="modal"
+            aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <div class="col-12 grid-margin">
+            <div class="card">
+              <div class="card-body">
+                <!-- <h4 class="card-title">Horizontal Two column</h4> -->
+                <form class="form-sample memberadd-form" action="{%url 'Member' %}" method="post" id="memberaddForm" enctype="multipart/form-data">
+                  {% csrf_token %}
+                  <p class="card-description">Personal Info</p>
+                  <div class="row">
+                    {% for field in form %}
+                    <div class="col-md-6">
+                      <div class="form-group row">
+                        <label class="col-sm-3 col-form-label">{{field.label}}</label>
+                        <div class="col-sm-9">
+                          {% if field.name == 'Photo' %}
+                          <!-- <input type="file" required class="form-control" name="profile_pic" id="profilePicInput" accept="image/*" capture="camera" style="display:none;"> -->
+                           {{field}}
+                          <div>
+                              <button type="button" id="uploadButton" class="btn btn-primary mb-3">Take Profile Picture</button>
+                              <video id="video" width="320" height="240" autoplay style="display:none;"></video><br>
+                              <button id="capture" style="display:none;" class="btn btn-success mb-3">Capture Photo</button>
+                              <canvas id="canvas" width="320" height="240" style="display:none;"></canvas>
+                              <img id="capturedImage" src="" alt="Captured Image" style="display:none;"><br>
+                              <button id="recapture" style="display:none;" class="btn btn-warning">Recapture</button>
+                          </div>
+                      {% else %}
+                          {{ field }}
+                      {% endif %}
+                          
+                        </div>
+                      </div>
+                    </div>
+                    {% endfor %}
+                  </div>
+                  <p class="card-description"></p>
+                  <p lass="card-description">Subscription Info</p>
+                  <div class="row">
+                    {% for field in sub_form %}
+                    <div class="col-md-6">
+                      <div class="form-group row">
+                        <label class="col-sm-3 col-form-label">{{field.label}}</label>
+                        <div class="col-sm-9">
+                          {{field}}
+                        </div>
+                      </div>
+                    </div>
+                    {% endfor %}
+                  </div>
+
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+          <button type="submit" id="submitButton" onclick="disablebutton()" class="btn btn-primary">Submit</button>
+        </div>
+      </form>
+
+      </div>
+    </div>
+  </div>
+
+
+  <!-- Modal add payment-->
+  <div class="modal fade" id="staticBackdropPayment" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+  aria-labelledby="staticBackdropLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="staticBackdropLabel">Add Payment</h5>
+        <button type="button" class="btn btn-close mdi mdi-close text-xxl" data-bs-dismiss="modal"
+          aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <div class="col-12 grid-margin">
+          <div class="card">
+            <div class="card-body">
+              <!-- <h4 class="card-title">Horizontal Two column</h4> -->
+              <form class="form-sample memberadd-form" method="post" action="{%url 'AddNewPayment' %}"
+                enctype="multipart/form-data">
+                {% csrf_token %}
+                <p class="card-description">Add Payment</p>
+                <!-- <div class="row">
+                  {% for field in form %}
+                  <div class="col-md-6">
+                    <div class="form-group row">
+                      <label class="col-sm-3 col-form-label">{{field.label}}:</label>
+                      <div class="col-sm-9">
+                        {{field}}
+                      </div>
+                    </div>
+                  </div>
+                  {% endfor %}
+
+                </div> -->
+
+                <div class="row">
+
+                  <div class="col-md-12">
+                    <div class="form-group row">
+                      <label class="col-sm-3 col-form-label">Please Select Member to Add Payment:</label>
+
+                      <div class="col-sm-12">
+                        <input type="text" id="memberSearch" class="form-control" autocomplete="off" placeholder="Search member...">
+                        <input type="hidden" name="member" id="selectedMemberId" required >
+                        <div id="memberResults" class="dropdown-menu w-100" style="display: none;"></div>
+                      </div>
+
+                    </div>
+                  </div>
+
+
+                </div>
+                <!-- <div class="row">
+                  <div class="col-md-10">
+                    <div class="form-group row">
+                      <label class="col-sm-4 col-form-label">Extend Subscription <sup>(Optional)</sup>:</label>
+                      <div class="col-sm-8">
+                        <input type="date" name="sub_extendate" class="form-control">
+                      </div>
+                    </div>
+                  </div>
+                </div> -->
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        <button type="submit" class="btn btn-primary">Proceed With Payment</button>
+      </div>
+      </form>
+
+    </div>
+  </div>
+</div>
+
         <footer class="footer">
           <div class="d-sm-flex justify-content-center justify-content-sm-between">
-            <span class="text-muted d-block text-center text-sm-left d-sm-inline-block">Copyright © Byteboot Techno Solutions Pvt Ltd</span>
+            <span class="text-muted d-block text-center text-sm-left d-sm-inline-block">Copyright © red defend
+              computers</span>
             <span class="float-none float-sm-right d-block mt-1 mt-sm-0 text-center"> Developed By <a
-                href="https://www.byteboot.in/" target="_blank">Byteboot Techno Solutions Pvt Ltd</a></span>
+                href="https://reddefend.ae/" target="_blank">red defend computers</a></span>
           </div>
         </footer>
       </div>
@@ -663,9 +896,9 @@
     <!-- page-body-wrapper ends -->
   </div>
   <script>
-    const apiUrl = 'https://api.openweathermap.org/data/2.5/weather?q=kochi&units=metric&appid=076465d2e663be277c6d13a3991ca3b6';
+    const apiUrl = 'https://api.openweathermap.org/data/2.5/weather?q=dubai&units=metric&appid=076465d2e663be277c6d13a3991ca3b6';
     const currentDate = new Date();
-    const apiWeeKurl = "https://api.openweathermap.org/data/2.5/forecast?q=kochi&units=metric&appid=076465d2e663be277c6d13a3991ca3b6"
+    const apiWeeKurl = "https://api.openweathermap.org/data/2.5/forecast?q=dubai&units=metric&appid=076465d2e663be277c6d13a3991ca3b6"
     // Get the current date and time components
     const year = currentDate.getFullYear();
     const month = currentDate.getMonth() + 1; // Months are zero-based, so add 1
@@ -726,6 +959,588 @@
 
     })
   </script>
+  
+<script>
+  document.getElementById('uploadButton').addEventListener('click', function() {
+      // Show video and capture button
+      document.getElementById('video').style.display = 'block';
+      document.getElementById('capture').style.display = 'block';
+  
+      // Access camera
+      navigator.mediaDevices.getUserMedia({ video: true })
+          .then(function(stream) {
+              const video = document.getElementById('video');
+              video.srcObject = stream;
+              video.play();
+          })
+          .catch(function(err) {
+              console.log("Error accessing camera: " + err);
+          });
+  });
+  
+  document.getElementById('capture').addEventListener('click', function() {
+      const video = document.getElementById('video');
+      const canvas = document.getElementById('canvas');
+      const context = canvas.getContext('2d');
+  
+      // Capture image from video
+      context.drawImage(video, 0, 0, canvas.width, canvas.height);
+  
+      // Convert canvas image to file
+      canvas.toBlob(function(blob) {
+          const file = new File([blob], "profile_pic.png", { type: "image/png" });
+          
+          // Set file to Django form input
+          const dataTransfer = new DataTransfer();
+          dataTransfer.items.add(file);
+          document.getElementById('profilePic').files = dataTransfer.files;
+  
+      }, "image/png");
+  
+      // Show captured image
+      document.getElementById('capturedImage').src = canvas.toDataURL("image/png");
+      document.getElementById('capturedImage').style.display = 'block';
+  
+      // Hide video and capture button, show recapture button
+      video.style.display = 'none';
+      document.getElementById('capture').style.display = 'none';
+      document.getElementById('recapture').style.display = 'block';
+  });
+  
+  document.getElementById('recapture').addEventListener('click', function() {
+      document.getElementById('video').style.display = 'block';
+      document.getElementById('capture').style.display = 'block';
+      document.getElementById('capturedImage').style.display = 'none';
+      document.getElementById('recapture').style.display = 'none';
+  });
+
+
+  function disablebutton() {
+  const form = document.getElementById("memberaddForm");
+  const button = document.getElementById("submitButton");
+  let isValid = true;
+
+  // First validate the form
+  for (let i = 0; i < form.elements.length; i++) {
+    const field = form.elements[i];
+    if (field.required && !field.value.trim()) {
+      isValid = false;
+      field.style.border = "1px solid red"; // Highlight invalid fields
+    } else {
+      field.style.border = ""; // Reset valid fields
+    }
+  }
+
+  if (!isValid) {
+    alert("Please fill out all required fields.");
+    return false; // Prevent form submission
+  }
+
+  // If validation passes, then disable button and submit
+  button.disabled = true;
+  button.innerHTML = 'Submitting...';
+  button.style.backgroundColor = '#ccc';
+  
+  // Submit the form
+  form.submit();
+  
+  // Reset button after 5 seconds
+  setTimeout(function() {
+    button.disabled = false;
+    button.innerHTML = 'Submit';
+    button.style.backgroundColor = '';
+  }, 5000);
+}
+  </script>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+    const memberSearch = document.getElementById('memberSearch');
+    const memberResults = document.getElementById('memberResults');
+    const selectedMemberId = document.getElementById('selectedMemberId');
+    
+    let currentFocus = -1;
+    
+    // Search functionality with AJAX
+    let searchTimeout;
+    memberSearch.addEventListener('input', function() {
+      const searchTerm = this.value;
+      
+      // Clear previous timeout and reset focus
+      clearTimeout(searchTimeout);
+      currentFocus = -1;
+      
+      if (searchTerm.length < 2) {
+        memberResults.style.display = 'none';
+        return;
+      }
+      
+      // Set a small delay to prevent too many requests
+      searchTimeout = setTimeout(() => {
+        fetch(`/members/search_members/?term=${encodeURIComponent(searchTerm)}`)
+          .then(response => response.json())
+          .then(data => {
+            displayResults(data);
+          })
+          .catch(error => console.error('Error:', error));
+      }, 300);
+    });
+    
+    // Display filtered results
+    function displayResults(results) {
+      memberResults.innerHTML = '';
+      
+      if (results.length === 0) {
+        memberResults.innerHTML = '<div class="dropdown-item">No members found</div>';
+        memberResults.style.display = 'block';
+        return;
+      }
+      
+      results.forEach(member => {
+        const item = document.createElement('a');
+        item.className = 'dropdown-item';
+        item.href = '#';
+        item.textContent = member.name;
+        item.dataset.id = member.id;
+        item.addEventListener('click', function(e) {
+          e.preventDefault();
+          selectItem(this);
+        });
+        
+        memberResults.appendChild(item);
+      });
+      
+      memberResults.style.display = 'block';
+    }
+    
+    // Function to select an item from dropdown
+    function selectItem(item) {
+      memberSearch.value = item.textContent;
+      selectedMemberId.value = item.dataset.id;
+      memberResults.style.display = 'none';
+      memberSearch.focus();
+    }
+    
+    // Add keyboard navigation
+    memberSearch.addEventListener('keydown', function(e) {
+      const items = memberResults.getElementsByClassName('dropdown-item');
+      
+      if (!items.length) return;
+      
+      // Down arrow
+      if (e.keyCode === 40) {
+        currentFocus++;
+        addActive(items);
+        e.preventDefault(); // Prevent cursor from moving to end of input
+      } 
+      // Up arrow
+      else if (e.keyCode === 38) {
+        currentFocus--;
+        addActive(items);
+        e.preventDefault(); // Prevent cursor from moving to start of input
+      } 
+      // Enter key
+      else if (e.keyCode === 13) {
+        e.preventDefault();
+        if (currentFocus > -1) {
+          if (items[currentFocus]) {
+            selectItem(items[currentFocus]);
+          }
+        }
+      }
+    });
+    
+    // Function to add active class to item
+    function addActive(items) {
+      if (!items) return false;
+      
+      // Remove active from all items
+      removeActive(items);
+      
+      // Adjust the focus if needed
+      if (currentFocus >= items.length) currentFocus = 0;
+      if (currentFocus < 0) currentFocus = (items.length - 1);
+      
+      // Add active class
+      items[currentFocus].classList.add('active');
+      
+      // Scroll into view if needed
+      items[currentFocus].scrollIntoView({block: 'nearest'});
+    }
+    
+    // Function to remove active class from items
+    function removeActive(items) {
+      for (let i = 0; i < items.length; i++) {
+        items[i].classList.remove('active');
+      }
+    }
+    
+    // Close dropdown when clicking outside
+    document.addEventListener('click', function(e) {
+      if (e.target !== memberSearch && e.target !== memberResults) {
+        memberResults.style.display = 'none';
+      }
+    });
+    
+    // Show dropdown when focusing on search input
+    memberSearch.addEventListener('focus', function() {
+      if (this.value.length >= 2) {
+        memberResults.style.display = 'block';
+      }
+    });
+  });
+  </script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+
+  <script>
+      // Global chart variable
+      let incomeExpenseChart;
+  
+      // Format currency function
+      function formatCurrency(amount) {
+          return '₹' + amount.toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,');
+      }
+  
+      // Load chart data function
+      function loadChartData(period) {
+          fetch(`/get_chart_data/?period=${period}`)
+              .then(response => response.json())
+              .then(data => {
+                  // Update summary totals
+                  document.getElementById('totalIncome').textContent = formatCurrency(data.summary.income);
+                  document.getElementById('totalExpense').textContent = formatCurrency(data.summary.expense);
+                  
+                  const profitElement = document.getElementById('totalProfit');
+                  profitElement.textContent = formatCurrency(data.summary.profit);
+                  
+                  // Set color based on profit/loss
+                  if (data.summary.profit >= 0) {
+                      profitElement.classList.remove('text-danger');
+                      profitElement.classList.add('text-primary');
+                  } else {
+                      profitElement.classList.remove('text-primary');
+                      profitElement.classList.add('text-danger');
+                  }
+                  
+                  // Update chart
+                  updateChart(data);
+              })
+              .catch(error => console.error('Error loading chart data:', error));
+      }
+  
+      // Update chart function
+      function updateChart(data) {
+          // Destroy existing chart if it exists
+          if (incomeExpenseChart) {
+              incomeExpenseChart.destroy();
+          }
+  
+          // Get the canvas context
+          const ctx = document.getElementById('incomeExpenseChart').getContext('2d');
+          
+          // Create new chart
+          incomeExpenseChart = new Chart(ctx, {
+              type: 'bar',
+              data: {
+                  labels: data.labels,
+                  datasets: [
+                      {
+                          label: 'Income',
+                          backgroundColor: 'rgba(78, 115, 223, 0.6)',
+                          borderColor: 'rgba(78, 115, 223, 1)',
+                          borderWidth: 1,
+                          data: data.income
+                      },
+                      {
+                          label: 'Expense',
+                          backgroundColor: 'rgba(231, 74, 59, 0.6)',
+                          borderColor: 'rgba(231, 74, 59, 1)',
+                          borderWidth: 1,
+                          data: data.expense
+                      },
+                      {
+                          label: 'Profit/Loss',
+                          type: 'line',
+                          fill: false,
+                          backgroundColor: 'rgba(54, 185, 204, 0.6)',
+                          borderColor: 'rgba(54, 185, 204, 1)',
+                          borderWidth: 2,
+                          pointBackgroundColor: 'rgba(54, 185, 204, 1)',
+                          pointBorderColor: '#fff',
+                          pointHoverBackgroundColor: '#fff',
+                          pointHoverBorderColor: 'rgba(54, 185, 204, 1)',
+                          data: data.profit
+                      }
+                  ]
+              },
+              options: {
+                  responsive: true,
+                  maintainAspectRatio: false,
+                  scales: {
+                      x: {
+                          grid: {
+                              display: false
+                          }
+                      },
+                      y: {
+                          beginAtZero: false,
+                          ticks: {
+                              callback: function(value) {
+                                  return '₹' + value.toLocaleString();
+                              }
+                          }
+                      }
+                  },
+                  plugins: {
+                      tooltip: {
+                          callbacks: {
+                              label: function(context) {
+                                  let label = context.dataset.label || '';
+                                  if (label) {
+                                      label += ': ';
+                                  }
+                                  label += formatCurrency(context.raw);
+                                  return label;
+                              }
+                          }
+                      },
+                      legend: {
+                          display: true,
+                          position: 'top'
+                      }
+                  }
+              }
+          });
+      }
+  
+      // Add event listener to period selector
+      document.getElementById('periodSelector').addEventListener('change', function() {
+          loadChartData(this.value);
+      });
+  
+      // Initial chart load
+      document.addEventListener('DOMContentLoaded', function() {
+          // Use the initial period passed from the server or default to monthly
+          const initialPeriod = "{{ initial_period }}";
+          document.getElementById('periodSelector').value = initialPeriod;
+          loadChartData(initialPeriod);
+      });
+  </script>
+
+
+<script>
+  // Global chart variable
+  let paymentModeChart;
+
+  // Format currency function
+  function formatCurrency(amount) {
+      return '₹' + amount.toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,');
+  }
+
+  // Load payment chart data function
+  function loadPaymentChartData(period) {
+      fetch(`/get_payment_chart_data/?period=${period}`)
+          .then(response => response.json())
+          .then(data => {
+              updatePaymentChart(data);
+              updatePaymentSummary(data.summary);
+          })
+          .catch(error => console.error('Error loading payment chart data:', error));
+  }
+
+  // Update payment chart function
+  function updatePaymentChart(data) {
+      // Destroy existing chart if it exists
+      if (paymentModeChart) {
+          paymentModeChart.destroy();
+      }
+
+      // Get the canvas context
+      const ctx = document.getElementById('paymentModeChart').getContext('2d');
+      
+      // Create new chart
+      paymentModeChart = new Chart(ctx, {
+          type: 'bar',
+          data: {
+              labels: data.labels,
+              datasets: data.datasets
+          },
+          options: {
+              responsive: true,
+              maintainAspectRatio: false,
+              scales: {
+                  x: {
+                      grid: {
+                          display: false
+                      },
+                      stacked: true
+                  },
+                  y: {
+                      beginAtZero: true,
+                      stacked: true,
+                      ticks: {
+                          callback: function(value) {
+                              return '₹' + value.toLocaleString();
+                          }
+                      }
+                  }
+              },
+              plugins: {
+                  tooltip: {
+                      callbacks: {
+                          label: function(context) {
+                              let label = context.dataset.label || '';
+                              if (label) {
+                                  label += ': ';
+                              }
+                              label += formatCurrency(context.raw);
+                              return label;
+                          }
+                      }
+                  },
+                  legend: {
+                      display: true,
+                      position: 'top'
+                  }
+              }
+          }
+      });
+  }
+
+  // Update payment summary function
+  function updatePaymentSummary(summary) {
+      // Calculate total (including balance payments)
+      const total = summary.total_payments + summary.balance_payments;
+      
+      // Clear existing content
+      const summaryContainer = document.getElementById('paymentSummary');
+      const progressBar = document.getElementById('paymentDistribution');
+      
+      summaryContainer.innerHTML = '';
+      progressBar.innerHTML = '';
+      
+      // Create progress bar segments
+      const colors = {
+          'Cash': '#2ecc71',
+          'Bank Transfer': '#3498db',
+          'Card': '#9b59b6',
+          'Balance': '#e74c3c',
+          'Unknown': '#bdc3c7'
+      };
+      
+      // Add progress bar segments for each payment mode
+      Object.entries(summary.payment_modes).forEach(([mode, amount]) => {
+          if (amount > 0) {
+              const percentage = (amount / total * 100).toFixed(1);
+              const div = document.createElement('div');
+              div.className = 'progress-bar';
+              div.style.width = percentage + '%';
+              div.style.backgroundColor = colors[mode] || '#bdc3c7';
+              div.setAttribute('role', 'progressbar');
+              div.setAttribute('aria-valuenow', percentage);
+              div.setAttribute('aria-valuemin', '0');
+              div.setAttribute('aria-valuemax', '100');
+              div.title = `${mode}: ${percentage}%`;
+              progressBar.appendChild(div);
+          }
+      });
+      
+      // Add progress bar segment for balance payments
+      if (summary.balance_payments > 0) {
+          const percentage = (summary.balance_payments / total * 100).toFixed(1);
+          const div = document.createElement('div');
+          div.className = 'progress-bar';
+          div.style.width = percentage + '%';
+          div.style.backgroundColor = colors['Balance'];
+          div.setAttribute('role', 'progressbar');
+          div.setAttribute('aria-valuenow', percentage);
+          div.setAttribute('aria-valuemin', '0');
+          div.setAttribute('aria-valuemax', '100');
+          div.title = `Balance Payments: ${percentage}%`;
+          progressBar.appendChild(div);
+      }
+      
+      // Create summary cards for each payment mode
+      Object.entries(summary.payment_modes).forEach(([mode, amount]) => {
+          const col = document.createElement('div');
+          col.className = 'col-md-3 col-sm-6 mb-4';
+          
+          col.innerHTML = `
+              <div class="card border-left-primary h-100 py-2">
+                  <div class="card-body">
+                      <div class="row no-gutters align-items-center">
+                          <div class="col mr-2">
+                              <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">${mode}</div>
+                              <div class="h5 mb-0 font-weight-bold text-gray-800">${formatCurrency(amount)}</div>
+                          </div>
+                          <div class="col-auto">
+                              <i class="fas fa-dollar-sign fa-2x text-gray-300"></i>
+                          </div>
+                      </div>
+                  </div>
+              </div>
+          `;
+          
+          summaryContainer.appendChild(col);
+      });
+      
+      // Add balance payments summary card
+      if (summary.balance_payments > 0) {
+          const col = document.createElement('div');
+          col.className = 'col-md-3 col-sm-6 mb-4';
+          
+          col.innerHTML = `
+              <div class="card border-left-danger h-100 py-2">
+                  <div class="card-body">
+                      <div class="row no-gutters align-items-center">
+                          <div class="col mr-2">
+                              <div class="text-xs font-weight-bold text-danger text-uppercase mb-1">Balance Payments</div>
+                              <div class="h5 mb-0 font-weight-bold text-gray-800">${formatCurrency(summary.balance_payments)}</div>
+                          </div>
+                          <div class="col-auto">
+                              <i class="fas fa-exclamation-circle fa-2x text-gray-300"></i>
+                          </div>
+                      </div>
+                  </div>
+              </div>
+          `;
+          
+          summaryContainer.appendChild(col);
+      }
+      
+      // Add total summary card
+      const totalCol = document.createElement('div');
+      totalCol.className = 'col-md-3 col-sm-6 mb-4';
+      
+      totalCol.innerHTML = `
+          <div class="card border-left-success h-100 py-2">
+              <div class="card-body">
+                  <div class="row no-gutters align-items-center">
+                      <div class="col mr-2">
+                          <div class="text-xs font-weight-bold text-success text-uppercase mb-1">Total Payments</div>
+                          <div class="h5 mb-0 font-weight-bold text-gray-800">${formatCurrency(total)}</div>
+                      </div>
+                      <div class="col-auto">
+                          <i class="fas fa-check-circle fa-2x text-gray-300"></i>
+                      </div>
+                  </div>
+              </div>
+          </div>
+      `;
+      
+      summaryContainer.appendChild(totalCol);
+  }
+
+  // Add event listener to period selector
+  document.getElementById('paymentPeriodSelector').addEventListener('change', function() {
+      loadPaymentChartData(this.value);
+  });
+
+  // Initial chart load
+  document.addEventListener('DOMContentLoaded', function() {
+      loadPaymentChartData('monthly');
+  });
+</script>
   <!-- container-scroller -->
   <!-- plugins:js -->
   <!-- <script src="{%static 'assets/vendors/js/vendor.bundle.base.js' %}"></script> -->
