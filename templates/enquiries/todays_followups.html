@@ -1,0 +1,394 @@
+{% extends 'index.html' %}
+{% block title %}Today's Follow-ups - Enquiry Management{% endblock %}
+{% block content %}
+
+
+<div class="main-panel">
+    <div class="content-wrapper pb-0">
+
+
+
+<style>
+  .followup-card {
+    border-left: 4px solid #007bff;
+    transition: all 0.2s;
+  }
+  
+  .followup-card.overdue {
+    border-left-color: #dc3545;
+    background-color: #fff5f5;
+  }
+  
+  .followup-card.today {
+    border-left-color: #ffc107;
+    background-color: #fffcf0;
+  }
+  
+  .followup-card.upcoming {
+    border-left-color: #28a745;
+    background-color: #f8fff8;
+  }
+  
+  .followup-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+  }
+  
+  .quick-actions {
+    display: none;
+  }
+  
+  .followup-card:hover .quick-actions {
+    display: block;
+  }
+  
+  .priority-badge {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+  }
+  
+  .days-overdue {
+    background: linear-gradient(45deg, #ff6b6b, #ee5a24);
+    color: white;
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 0.7em;
+    font-weight: bold;
+  }
+  
+  .contact-info {
+    font-size: 0.9em;
+    color: #6c757d;
+  }
+</style>
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2><i class="fas fa-calendar-check"></i> Today's Follow-ups</h2>
+    <div>
+        <a href="{% url 'enquiries' %}" class="btn btn-outline-secondary">
+            <i class="fas fa-dashboard"></i> Dashboard
+        </a>
+        <a href="{% url 'enquiry_list' %}" class="btn btn-outline-primary">
+            <i class="fas fa-list"></i> All Enquiries
+        </a>
+    </div>
+</div>
+
+<!-- Statistics Row -->
+<div class="row mb-4">
+    <div class="col-md-3">
+        <div class="card text-center border-danger">
+            <div class="card-body">
+                <h3 class="text-danger">{{ overdue_count }}</h3>
+                <p class="mb-0">Overdue</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card text-center border-warning">
+            <div class="card-body">
+                <h3 class="text-warning">{{ today_count }}</h3>
+                <p class="mb-0">Due Today</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card text-center border-success">
+            <div class="card-body">
+                <h3 class="text-success">{{ upcoming_count }}</h3>
+                <p class="mb-0">This Week</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card text-center border-info">
+            <div class="card-body">
+                <h3 class="text-info">{{ total_due }}</h3>
+                <p class="mb-0">Total Due</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Overdue Follow-ups -->
+{% if overdue_followups %}
+<div class="card mb-4">
+    <div class="card-header bg-danger text-white">
+        <h5 class="mb-0">
+            <i class="fas fa-exclamation-triangle"></i> Overdue Follow-ups ({{ overdue_count }})
+        </h5>
+    </div>
+    <div class="card-body">
+        <div class="row">
+            {% for enquiry in overdue_followups %}
+                <div class="col-lg-6 mb-3">
+                    <div class="card followup-card overdue position-relative">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-start">
+                                <div class="flex-grow-1">
+                                    <h6 class="card-title mb-1">
+                                        <a href="{% url 'enquiry_detail' enquiry.pk %}" class="text-decoration-none">
+                                            {{ enquiry.name }}
+                                        </a>
+                                    </h6>
+                                    <div class="contact-info mb-2">
+                                        <i class="fas fa-phone"></i> 
+                                        <a href="tel:{{ enquiry.phone_number }}">{{ enquiry.phone_number }}</a>
+                                        {% if enquiry.email %}
+                                            | <i class="fas fa-envelope"></i> 
+                                            <a href="mailto:{{ enquiry.email }}">{{ enquiry.email }}</a>
+                                        {% endif %}
+                                    </div>
+                                    <div class="mb-2">
+                                        <span class="badge status-{{ enquiry.status }} badge-status">
+                                            {{ enquiry.get_status_display }}
+                                        </span>
+                                        <span class="badge bg-info ms-1">
+                                            {{ enquiry.number_of_followup }} follow-ups
+                                        </span>
+                                    </div>
+                                    <small class="text-muted">
+                                        Due: {{ enquiry.next_follow_up_date|date:"M d, Y" }}
+                                        {% with days_overdue=today|timesince:enquiry.next_follow_up_date %}
+                                            <span class="days-overdue ms-2">
+                                                {{ enquiry.next_follow_up_date|timesince:today }} overdue
+                                            </span>
+                                        {% endwith %}
+                                    </small>
+                                </div>
+                            </div>
+                            
+                            <!-- Quick Actions -->
+                            <div class="quick-actions mt-3">
+                                <form method="post" class="d-inline">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="enquiry_id" value="{{ enquiry.pk }}">
+                                    <div class="btn-group btn-group-sm" role="group">
+                                        <button type="submit" name="quick_status" value="callback" 
+                                                class="btn btn-outline-primary" title="Schedule Callback">
+                                            <i class="fas fa-phone"></i> Callback
+                                        </button>
+                                        <button type="submit" name="quick_status" value="interested" 
+                                                class="btn btn-outline-success" title="Mark Interested">
+                                            <i class="fas fa-thumbs-up"></i> Interested
+                                        </button>
+                                        <button type="submit" name="quick_status" value="not_interested" 
+                                                class="btn btn-outline-danger" title="Not Interested">
+                                            <i class="fas fa-thumbs-down"></i> Not Interested
+                                        </button>
+                                        <a href="{% url 'add_status_update' enquiry.pk %}" 
+                                           class="btn btn-outline-info" title="Detailed Update">
+                                            <i class="fas fa-edit"></i> Detail
+                                        </a>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endif %}
+
+<!-- Today's Follow-ups -->
+{% if todays_followups %}
+<div class="card mb-4">
+    <div class="card-header bg-warning text-dark">
+        <h5 class="mb-0">
+            <i class="fas fa-calendar-day"></i> Due Today ({{ today_count }})
+        </h5>
+    </div>
+    <div class="card-body">
+        <div class="row">
+            {% for enquiry in todays_followups %}
+                <div class="col-lg-6 mb-3">
+                    <div class="card followup-card today position-relative">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-start">
+                                <div class="flex-grow-1">
+                                    <h6 class="card-title mb-1">
+                                        <a href="{% url 'enquiry_detail' enquiry.pk %}" class="text-decoration-none">
+                                            {{ enquiry.name }}
+                                        </a>
+                                    </h6>
+                                    <div class="contact-info mb-2">
+                                        <i class="fas fa-phone"></i> 
+                                        <a href="tel:{{ enquiry.phone_number }}">{{ enquiry.phone_number }}</a>
+                                        {% if enquiry.email %}
+                                            | <i class="fas fa-envelope"></i> 
+                                            <a href="mailto:{{ enquiry.email }}">{{ enquiry.email }}</a>
+                                        {% endif %}
+                                    </div>
+                                    <div class="mb-2">
+                                        <span class="badge status-{{ enquiry.status }} badge-status">
+                                            {{ enquiry.get_status_display }}
+                                        </span>
+                                        <span class="badge bg-info ms-1">
+                                            {{ enquiry.number_of_followup }} follow-ups
+                                        </span>
+                                    </div>
+                                    <small class="text-muted">
+                                        Due: Today ({{ enquiry.next_follow_up_date|date:"M d, Y" }})
+                                    </small>
+                                </div>
+                            </div>
+                            
+                            <!-- Quick Actions -->
+                            <div class="quick-actions mt-3">
+                                <form method="post" class="d-inline">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="enquiry_id" value="{{ enquiry.pk }}">
+                                    <div class="btn-group btn-group-sm" role="group">
+                                        <button type="submit" name="quick_status" value="callback" 
+                                                class="btn btn-outline-primary" title="Schedule Callback">
+                                            <i class="fas fa-phone"></i> Callback
+                                        </button>
+                                        <button type="submit" name="quick_status" value="interested" 
+                                                class="btn btn-outline-success" title="Mark Interested">
+                                            <i class="fas fa-thumbs-up"></i> Interested
+                                        </button>
+                                        <button type="submit" name="quick_status" value="converted" 
+                                                class="btn btn-success" title="Mark Converted">
+                                            <i class="fas fa-check"></i> Converted
+                                        </button>
+                                        <button type="submit" name="quick_status" value="not_interested" 
+                                                class="btn btn-outline-danger" title="Not Interested">
+                                            <i class="fas fa-thumbs-down"></i> Not Interested
+                                        </button>
+                                        <a href="{% url 'add_status_update' enquiry.pk %}" 
+                                           class="btn btn-outline-info" title="Detailed Update">
+                                            <i class="fas fa-edit"></i> Detail
+                                        </a>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endif %}
+
+<!-- Upcoming Follow-ups -->
+{% if upcoming_followups %}
+<div class="card mb-4">
+    <div class="card-header bg-success text-white">
+        <h5 class="mb-0">
+            <i class="fas fa-calendar-plus"></i> Upcoming This Week ({{ upcoming_count }})
+        </h5>
+    </div>
+    <div class="card-body">
+        <div class="row">
+            {% for enquiry in upcoming_followups %}
+                <div class="col-lg-6 mb-3">
+                    <div class="card followup-card upcoming">
+                        <div class="card-body">
+                            <h6 class="card-title mb-1">
+                                <a href="{% url 'enquiry_detail' enquiry.pk %}" class="text-decoration-none">
+                                    {{ enquiry.name }}
+                                </a>
+                            </h6>
+                            <div class="contact-info mb-2">
+                                <i class="fas fa-phone"></i> {{ enquiry.phone_number }}
+                                {% if enquiry.email %}
+                                    | <i class="fas fa-envelope"></i> {{ enquiry.email }}
+                                {% endif %}
+                            </div>
+                            <div class="mb-2">
+                                <span class="badge status-{{ enquiry.status }} badge-status">
+                                    {{ enquiry.get_status_display }}
+                                </span>
+                                <span class="badge bg-info ms-1">
+                                    {{ enquiry.number_of_followup }} follow-ups
+                                </span>
+                            </div>
+                            <small class="text-muted">
+                                Due: {{ enquiry.next_follow_up_date|date:"M d, Y" }} 
+                                ({{ enquiry.next_follow_up_date|timeuntil }})
+                            </small>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endif %}
+
+<!-- No Follow-ups Message -->
+{% if not overdue_followups and not todays_followups and not upcoming_followups %}
+<div class="card">
+    <div class="card-body text-center py-5">
+        <i class="fas fa-calendar-check fa-3x text-success mb-3"></i>
+        <h4 class="text-success">All caught up!</h4>
+        <p class="text-muted mb-4">No pending follow-ups at the moment.</p>
+        <div>
+            <a href="{% url 'enquiry_create' %}" class="btn btn-primary me-2">
+                <i class="fas fa-plus"></i> Add New Enquiry
+            </a>
+            <a href="{% url 'enquiry_list' %}" class="btn btn-outline-primary">
+                <i class="fas fa-list"></i> View All Enquiries
+            </a>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+<!-- Quick Notes Modal -->
+<div class="modal fade" id="quickNotesModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Add Quick Notes</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="quickNotesForm">
+                    <input type="hidden" id="noteEnquiryId" name="enquiry_id">
+                    <input type="hidden" id="noteStatus" name="quick_status">
+                    <div class="mb-3">
+                        <label for="quickNotes" class="form-label">Notes (Optional)</label>
+                        <textarea class="form-control" id="quickNotes" name="quick_notes" rows="3" 
+                                  placeholder="Add any additional notes..."></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" onclick="submitQuickNotes()">Save Update</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function showQuickNotes(enquiryId, status) {
+    document.getElementById('noteEnquiryId').value = enquiryId;
+    document.getElementById('noteStatus').value = status;
+    new bootstrap.Modal(document.getElementById('quickNotesModal')).show();
+}
+
+function submitQuickNotes() {
+    document.getElementById('quickNotesForm').method = 'post';
+    document.getElementById('quickNotesForm').submit();
+}
+
+// Auto-refresh every 5 minutes
+setTimeout(function() {
+    location.reload();
+}, 300000);
+</script>
+
+
+
+
+
+
+    </div>
+</div>
+{% endblock %}

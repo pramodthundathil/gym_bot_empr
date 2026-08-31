@@ -1,0 +1,194 @@
+
+
+
+
+
+{% extends 'index.html' %}
+{% block title %}Add Follow-up - {{ enquiry.name }}{% endblock %}
+
+{% block content %}
+
+
+
+
+
+<div class="main-panel">
+    <div class="content-wrapper pb-0">
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2><i class="fas fa-plus-circle"></i> Add Follow-up Status</h2>
+    <div>
+        <a href="{% url 'enquiry_detail' enquiry.pk %}" class="btn btn-outline-secondary">
+            <i class="fas fa-arrow-left"></i> Back to Details
+        </a>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-lg-8">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">
+                    <i class="fas fa-comment-dots"></i> New Follow-up for {{ enquiry.name }}
+                </h5>
+            </div>
+            <div class="card-body">
+                <form method="post">
+                    {% csrf_token %}
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="{{ form.status.id_for_label }}" class="form-label">
+                                    <strong>Enquiry Status *</strong>
+                                </label>
+                                {{ form.status }}
+                                {% if form.status.errors %}
+                                    <div class="text-danger small">{{ form.status.errors.0 }}</div>
+                                {% endif %}
+                                <div class="form-text">Overall status of the enquiry</div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="{{ form.call_status.id_for_label }}" class="form-label">
+                                    <strong>Call Status *</strong>
+                                </label>
+                                {{ form.call_status }}
+                                {% if form.call_status.errors %}
+                                    <div class="text-danger small">{{ form.call_status.errors.0 }}</div>
+                                {% endif %}
+                                <div class="form-text">Result of this interaction</div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="{{ form.next_followup.id_for_label }}" class="form-label">
+                                    <strong>Next Follow-up *</strong>
+                                </label>
+                                <input type="date" class="form-control" id="next_followup" name="next_followup">
+                                <div class="form-text">Next Follow-up Date</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <label for="{{ form.description.id_for_label }}" class="form-label">
+                            <strong>Follow-up Description *</strong>
+                        </label>
+                        {{ form.description }}
+                        {% if form.description.errors %}
+                            <div class="text-danger small">{{ form.description.errors.0 }}</div>
+                        {% endif %}
+                        <div class="form-text">
+                            Describe what happened in this follow-up, customer response, next steps, etc.
+                        </div>
+                    </div>
+                    
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle"></i>
+                        <strong>Note:</strong> Adding this follow-up will automatically:
+                        <ul class="mb-0 mt-2">
+                            <li>Update the enquiry's main status to match your selection</li>
+                            <li>Increment the follow-up count</li>
+                            <li>Set the last follow-up date to today</li>
+                            <li>Mark as converted if call status is "Converted"</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="d-flex gap-2">
+                        <button type="submit" class="btn btn-success">
+                            <i class="fas fa-save"></i> Add Follow-up
+                        </button>
+                        <a href="{% url 'enquiry_detail' enquiry.pk %}" class="btn btn-secondary">
+                            <i class="fas fa-times"></i> Cancel
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Enquiry Summary -->
+    <div class="col-lg-4">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0"><i class="fas fa-user"></i> Enquiry Summary</h5>
+            </div>
+            <div class="card-body">
+                <div class="mb-3">
+                    <strong>{{ enquiry.name }}</strong>
+                    <div class="text-muted small">
+                        <i class="fas fa-phone"></i> {{ enquiry.phone_number }}
+                    </div>
+                    {% if enquiry.email %}
+                        <div class="text-muted small">
+                            <i class="fas fa-envelope"></i> {{ enquiry.email }}
+                        </div>
+                    {% endif %}
+                </div>
+                
+                <div class="mb-2">
+                    <small class="text-muted">Current Status:</small><br>
+                    <span class="badge status-{{ enquiry.status }} badge-status">
+                        {{ enquiry.get_status_display }}
+                    </span>
+                </div>
+                
+                <div class="mb-2">
+                    <small class="text-muted">Conversion:</small><br>
+                    {% if enquiry.conversion %}
+                        <span class="badge bg-success"><i class="fas fa-check"></i> Converted</span>
+                    {% else %}
+                        <span class="badge bg-warning"><i class="fas fa-clock"></i> Not Converted</span>
+                    {% endif %}
+                </div>
+                
+                <div class="mb-2">
+                    <small class="text-muted">Follow-ups so far:</small><br>
+                    <span class="badge bg-info">{{ enquiry.number_of_followup }}</span>
+                </div>
+                
+                <div class="mb-2">
+                    <small class="text-muted">Last Follow-up:</small><br>
+                    {% if enquiry.last_follow_up_date %}
+                        {{ enquiry.last_follow_up_date|date:"M d, Y" }}
+                    {% else %}
+                        <span class="text-muted">None yet</span>
+                    {% endif %}
+                </div>
+                
+                <div>
+                    <small class="text-muted">Next Scheduled:</small><br>
+                    {% if enquiry.next_follow_up_date %}
+                        {{ enquiry.next_follow_up_date|date:"M d, Y" }}
+                    {% else %}
+                        <span class="text-muted">Not scheduled</span>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        
+        <!-- Quick Reference -->
+        <div class="card mt-3">
+            <div class="card-header">
+                <h5 class="card-title mb-0"><i class="fas fa-info"></i> Status Guide</h5>
+            </div>
+            <div class="card-body">
+                <h6 class="small">Call Status Options:</h6>
+                <ul class="list-unstyled small">
+                    <li><span class="badge call-status-rnr">RNR</span> - Ring No Response</li>
+                    <li><span class="badge call-status-callback">Callback</span> - Requested callback</li>
+                    <li><span class="badge call-status-interested">Interested</span> - Showed interest</li>
+                    <li><span class="badge call-status-not_interested">Not Interested</span> - Not interested</li>
+                    <li><span class="badge call-status-converted">Converted</span> - Deal closed!</li>
+                    <li><span class="badge call-status-follow_up">Follow Up</span> - Need follow-up</li>
+                    <li><span class="badge call-status-closed">Closed</span> - No further action</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+</div>
+{% endblock %}

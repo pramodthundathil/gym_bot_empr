@@ -13,5 +13,6 @@ urlpatterns = [
     path("",include("Index.urls")),
     path("members/",include(Members.urls)),
     path("finance/",include('Finance.urls')),
+    path("enquiries/",include('enquiry.urls')),
 ]
 urlpatterns = urlpatterns+static(settings.MEDIA_URL, document_root = settings.MEDIA_ROOT)

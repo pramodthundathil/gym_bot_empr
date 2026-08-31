@@ -1,0 +1,519 @@
+{% extends 'index.html' %}
+{% block content %}
+
+<style>
+    .parq-container {
+        max-width: 1000px;
+        margin: 0 auto;
+        background: #fff;
+        box-shadow: 0 0 20px rgba(0,0,0,0.1);
+        border-radius: 8px;
+    }
+    
+    .parq-header {
+        background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        color: white;
+        padding: 2rem;
+        text-align: center;
+        border-radius: 8px 8px 0 0;
+    }
+    
+    .parq-content {
+        padding: 2rem;
+    }
+    
+    .section-title {
+        background: #f8f9fa;
+        border-left: 4px solid #f5576c;
+        padding: 1rem;
+        margin: 2rem 0 1rem 0;
+        font-weight: 600;
+        border-radius: 0 8px 8px 0;
+    }
+    
+    .question-box {
+        border: 1px solid #dee2e6;
+        border-radius: 8px;
+        padding: 1.5rem;
+        margin: 1rem 0;
+        background: #f8f9fa;
+        transition: all 0.3s ease;
+    }
+    
+    .question-box:hover {
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        border-color: #f5576c;
+    }
+    
+    .question-text {
+        font-weight: 500;
+        margin-bottom: 1rem;
+        font-size: 1.1em;
+    }
+    
+    .radio-group {
+        display: flex;
+        gap: 2rem;
+        margin-top: 1rem;
+    }
+    
+    .radio-option {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-size: 1.1em;
+    }
+    
+    .radio-option input[type="radio"] {
+        width: 20px;
+        height: 20px;
+    }
+    
+    .specify-field {
+        margin-top: 1rem;
+        display: none;
+    }
+    
+    .specify-field.show {
+        display: block;
+        animation: fadeIn 0.3s ease;
+    }
+    
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(-10px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+    
+    .info-box {
+        background: #d1ecf1;
+        border: 1px solid #bee5eb;
+        border-radius: 8px;
+        padding: 1rem;
+        margin: 1rem 0;
+        border-left: 4px solid #17a2b8;
+    }
+    
+    .warning-box {
+        background: #fff3cd;
+        border: 1px solid #ffeaa7;
+        border-radius: 8px;
+        padding: 1rem;
+        margin: 1rem 0;
+        border-left: 4px solid #f39c12;
+    }
+    
+    .submit-section {
+        background: #f8f9fa;
+        border-radius: 8px;
+        padding: 2rem;
+        text-align: center;
+        margin-top: 2rem;
+    }
+    
+    .btn-update {
+        background: linear-gradient(135deg, #f5576c 0%, #f093fb 100%);
+        color: white;
+        padding: 1rem 3rem;
+        border: none;
+        border-radius: 8px;
+        font-size: 1.2em;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        margin-right: 1rem;
+    }
+    
+    .btn-update:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 15px rgba(245, 87, 108, 0.4);
+    }
+    
+    .btn-cancel {
+        background: #6c757d;
+        color: white;
+        padding: 1rem 3rem;
+        border: none;
+        border-radius: 8px;
+        font-size: 1.2em;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        display: inline-block;
+    }
+    
+    .btn-cancel:hover {
+        background: #5a6268;
+        color: white;
+        text-decoration: none;
+        transform: translateY(-2px);
+    }
+    
+    .contact-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 2rem;
+        margin: 1rem 0;
+    }
+    
+    .member-info {
+        background: #e9ecef;
+        border-radius: 8px;
+        padding: 1.5rem;
+        margin: 1rem 0;
+        border-left: 4px solid #6c757d;
+    }
+    
+    @media (max-width: 768px) {
+        .contact-grid {
+            grid-template-columns: 1fr;
+        }
+        
+        .radio-group {
+            flex-direction: column;
+            gap: 1rem;
+        }
+        
+        .parq-content {
+            padding: 1rem;
+        }
+        
+        .submit-section .btn-update,
+        .submit-section .btn-cancel {
+            display: block;
+            width: 100%;
+            margin: 0.5rem 0;
+        }
+    }
+</style>
+<div class="main-panel">
+    <div class="content-wrapper pb-0">
+<div class="parq-container">
+    <div class="parq-header">
+        <h1>Update PAR-Q Form</h1>
+        <p>Modify your Physical Activity Readiness Questionnaire</p>
+    </div>
+
+    <div class="parq-content">
+        <div class="info-box">
+            <strong>Note:</strong> You can update your responses to the PAR-Q questions. Signatures cannot be modified through this update form.
+        </div>
+
+        <!-- Member Information Display -->
+        <div class="member-info">
+            <h5><strong>Member:</strong> {{ parq_form.member.name }}</h5>
+            <p><strong>Phone:</strong> {{ parq_form.member.phone }} | <strong>Mobile:</strong> {{ parq_form.member.mobile }}</p>
+            <p><strong>Form Created:</strong> {{ parq_form.created_at|date:"F d, Y" }}</p>
+        </div>
+
+        <form method="post" id="parqUpdateForm">
+            {% csrf_token %}
+            
+            <!-- Emergency Contact Details -->
+            <div class="section-title">
+                Emergency Contact Details
+            </div>
+            
+            <div class="contact-grid">
+                <div class="form-group">
+                    <label for="id_emergency_contact_name"><strong>Name:</strong></label>
+                    {{ form.emergency_contact_name }}
+                </div>
+                <div class="form-group">
+                    <label for="id_emergency_contact_phone"><strong>Telephone No:</strong></label>
+                    {{ form.emergency_contact_phone }}
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label for="id_emergency_contact_mobile"><strong>Mobile No:</strong></label>
+                {{ form.emergency_contact_mobile }}
+            </div>
+
+            <!-- PAR-Q Questions -->
+            <div class="section-title">
+                Physical Activity Readiness Questionnaire
+            </div>
+
+            <div class="warning-box">
+                <strong>Please read carefully:</strong> If you select any "YES" answers, you must have your doctor's consent before participating in any physical activity.
+            </div>
+
+            <!-- Question 1 -->
+            <div class="question-box">
+                <div class="question-text">1. Has your doctor ever said that you have a heart condition and recommended only medically supervised activity?</div>
+                <div class="radio-group">
+                    <div class="radio-option">
+                        <input type="radio" name="heart_condition" value="True" id="heart_condition_yes" 
+                               {% if parq_form.heart_condition %}checked{% endif %}>
+                        <label for="heart_condition_yes">YES</label>
+                    </div>
+                    <div class="radio-option">
+                        <input type="radio" name="heart_condition" value="False" id="heart_condition_no" 
+                               {% if not parq_form.heart_condition %}checked{% endif %}>
+                        <label for="heart_condition_no">NO</label>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Question 2 -->
+            <div class="question-box">
+                <div class="question-text">2. Do you have chest pain brought on by physical activity?</div>
+                <div class="radio-group">
+                    <div class="radio-option">
+                        <input type="radio" name="chest_pain_activity" value="True" id="chest_pain_activity_yes"
+                               {% if parq_form.chest_pain_activity %}checked{% endif %}>
+                        <label for="chest_pain_activity_yes">YES</label>
+                    </div>
+                    <div class="radio-option">
+                        <input type="radio" name="chest_pain_activity" value="False" id="chest_pain_activity_no"
+                               {% if not parq_form.chest_pain_activity %}checked{% endif %}>
+                        <label for="chest_pain_activity_no">NO</label>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Question 3 -->
+            <div class="question-box">
+                <div class="question-text">3. Have you developed chest pain in the last month?</div>
+                <div class="radio-group">
+                    <div class="radio-option">
+                        <input type="radio" name="chest_pain_last_month" value="True" id="chest_pain_last_month_yes"
+                               {% if parq_form.chest_pain_last_month %}checked{% endif %}>
+                        <label for="chest_pain_last_month_yes">YES</label>
+                    </div>
+                    <div class="radio-option">
+                        <input type="radio" name="chest_pain_last_month" value="False" id="chest_pain_last_month_no"
+                               {% if not parq_form.chest_pain_last_month %}checked{% endif %}>
+                        <label for="chest_pain_last_month_no">NO</label>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Question 4 -->
+            <div class="question-box">
+                <div class="question-text">4. Do you tend to lose consciousness or fall over as a result of dizziness?</div>
+                <div class="radio-group">
+                    <div class="radio-option">
+                        <input type="radio" name="lose_consciousness" value="True" id="lose_consciousness_yes"
+                               {% if parq_form.lose_consciousness %}checked{% endif %}>
+                        <label for="lose_consciousness_yes">YES</label>
+                    </div>
+                    <div class="radio-option">
+                        <input type="radio" name="lose_consciousness" value="False" id="lose_consciousness_no"
+                               {% if not parq_form.lose_consciousness %}checked{% endif %}>
+                        <label for="lose_consciousness_no">NO</label>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Question 5 -->
+            <div class="question-box">
+                <div class="question-text">5. Do you have a bone or joint problem that could be aggravated by the proposed physical activity?</div>
+                <div class="radio-group">
+                    <div class="radio-option">
+                        <input type="radio" name="bone_joint_problem" value="True" id="bone_joint_problem_yes"
+                               {% if parq_form.bone_joint_problem %}checked{% endif %}>
+                        <label for="bone_joint_problem_yes">YES</label>
+                    </div>
+                    <div class="radio-option">
+                        <input type="radio" name="bone_joint_problem" value="False" id="bone_joint_problem_no"
+                               {% if not parq_form.bone_joint_problem %}checked{% endif %}>
+                        <label for="bone_joint_problem_no">NO</label>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Question 6 -->
+            <div class="question-box">
+                <div class="question-text">6. Do you suffer from asthma, diabetes, high blood pressure, epilepsy or a heart condition?</div>
+                <div class="radio-group">
+                    <div class="radio-option">
+                        <input type="radio" name="medical_conditions" value="True" id="medical_conditions_yes"
+                               {% if parq_form.medical_conditions %}checked{% endif %}>
+                        <label for="medical_conditions_yes">YES</label>
+                    </div>
+                    <div class="radio-option">
+                        <input type="radio" name="medical_conditions" value="False" id="medical_conditions_no"
+                               {% if not parq_form.medical_conditions %}checked{% endif %}>
+                        <label for="medical_conditions_no">NO</label>
+                    </div>
+                </div>
+                <div class="specify-field {% if parq_form.medical_conditions %}show{% endif %}" id="medical_conditions_specify_field">
+                    <label for="id_medical_conditions_specify"><strong>Please specify:</strong></label>
+                    {{ form.medical_conditions_specify }}
+                </div>
+            </div>
+
+            <!-- Question 7 -->
+            <div class="question-box">
+                <div class="question-text">7. Do you have any current conditions or injuries that are being treated by a doctor, physiotherapist, or health professional?</div>
+                <div class="radio-group">
+                    <div class="radio-option">
+                        <input type="radio" name="current_treatment" value="True" id="current_treatment_yes"
+                               {% if parq_form.current_treatment %}checked{% endif %}>
+                        <label for="current_treatment_yes">YES</label>
+                    </div>
+                    <div class="radio-option">
+                        <input type="radio" name="current_treatment" value="False" id="current_treatment_no"
+                               {% if not parq_form.current_treatment %}checked{% endif %}>
+                        <label for="current_treatment_no">NO</label>
+                    </div>
+                </div>
+                <div class="specify-field {% if parq_form.current_treatment %}show{% endif %}" id="current_treatment_specify_field">
+                    <label for="id_current_treatment_specify"><strong>Please specify:</strong></label>
+                    {{ form.current_treatment_specify }}
+                </div>
+            </div>
+
+            <!-- Question 8 -->
+            <div class="question-box">
+                <div class="question-text">8. Do you know of any other reason why you should not take part in exercise?</div>
+                <div class="radio-group">
+                    <div class="radio-option">
+                        <input type="radio" name="other_reason" value="True" id="other_reason_yes"
+                               {% if parq_form.other_reason %}checked{% endif %}>
+                        <label for="other_reason_yes">YES</label>
+                    </div>
+                    <div class="radio-option">
+                        <input type="radio" name="other_reason" value="False" id="other_reason_no"
+                               {% if not parq_form.other_reason %}checked{% endif %}>
+                        <label for="other_reason_no">NO</label>
+                    </div>
+                </div>
+                <div class="specify-field {% if parq_form.other_reason %}show{% endif %}" id="other_reason_specify_field">
+                    <label for="id_other_reason_specify"><strong>Please specify:</strong></label>
+                    {{ form.other_reason_specify }}
+                </div>
+            </div>
+
+            <!-- Current Signature Status -->
+            <div class="section-title">
+                Signature Status
+            </div>
+            
+            <div class="info-box">
+                <div class="row">
+                    <div class="col-md-4">
+                        <strong>Participant Signature:</strong><br>
+                        {% if parq_form.participant_signature %}
+                            <span class="text-success">✓ Signed</span><br>
+                            <small>Date: {{ parq_form.participant_signature_date|date:"F d, Y" }}</small>
+                        {% else %}
+                            <span class="text-danger">✗ Not Signed</span>
+                        {% endif %}
+                    </div>
+                    <div class="col-md-4">
+                        <strong>Parent/Guardian Signature:</strong><br>
+                        {% if parq_form.parent_guardian_signature %}
+                            <span class="text-success">✓ Signed</span><br>
+                            <small>Date: {{ parq_form.parent_guardian_signature_date|date:"F d, Y" }}</small>
+                        {% else %}
+                            <span class="text-muted">- Not Required/Signed</span>
+                        {% endif %}
+                    </div>
+                    <div class="col-md-4">
+                        <strong>Tutor's Signature:</strong><br>
+                        {% if parq_form.tutor_signature %}
+                            <span class="text-success">✓ Signed</span><br>
+                            <small>Date: {{ parq_form.tutor_signature_date|date:"F d, Y" }}</small>
+                        {% else %}
+                            <span class="text-muted">- Not Required/Signed</span>
+                        {% endif %}
+                    </div>
+                </div>
+                <p class="mt-3 mb-0"><small><strong>Note:</strong> To update signatures, please create a new PAR-Q form.</small></p>
+            </div>
+
+            <!-- Submit Section -->
+            <div class="submit-section">
+                <button type="submit" class="btn-update" id="updateBtn">
+                    Update PAR-Q Form
+                </button>
+                <a href="{% url 'parq_detail' parq_form.pk %}" class="btn-cancel">
+                    Cancel
+                </a>
+                <p class="mt-3 text-muted">
+                    Last updated: {{ parq_form.updated_at|date:"F d, Y \a\t g:i A" }}
+                </p>
+            </div>
+
+        </form>
+    </div>
+</div>
+</div>
+</div>
+
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        setupConditionalFields();
+        setupFormValidation();
+    });
+
+    function setupConditionalFields() {
+        // Medical conditions specify field
+        const medicalConditionsYes = document.getElementById('medical_conditions_yes');
+        const medicalConditionsNo = document.getElementById('medical_conditions_no');
+        const medicalConditionsSpecifyField = document.getElementById('medical_conditions_specify_field');
+
+        medicalConditionsYes.addEventListener('change', function() {
+            if (this.checked) {
+                medicalConditionsSpecifyField.classList.add('show');
+            }
+        });
+
+        medicalConditionsNo.addEventListener('change', function() {
+            if (this.checked) {
+                medicalConditionsSpecifyField.classList.remove('show');
+            }
+        });
+
+        // Current treatment specify field
+        const currentTreatmentYes = document.getElementById('current_treatment_yes');
+        const currentTreatmentNo = document.getElementById('current_treatment_no');
+        const currentTreatmentSpecifyField = document.getElementById('current_treatment_specify_field');
+
+        currentTreatmentYes.addEventListener('change', function() {
+            if (this.checked) {
+                currentTreatmentSpecifyField.classList.add('show');
+            }
+        });
+
+        currentTreatmentNo.addEventListener('change', function() {
+            if (this.checked) {
+                currentTreatmentSpecifyField.classList.remove('show');
+            }
+        });
+
+        // Other reason specify field
+        const otherReasonYes = document.getElementById('other_reason_yes');
+        const otherReasonNo = document.getElementById('other_reason_no');
+        const otherReasonSpecifyField = document.getElementById('other_reason_specify_field');
+
+        otherReasonYes.addEventListener('change', function() {
+            if (this.checked) {
+                otherReasonSpecifyField.classList.add('show');
+            }
+        });
+
+        otherReasonNo.addEventListener('change', function() {
+            if (this.checked) {
+                otherReasonSpecifyField.classList.remove('show');
+            }
+        });
+    }
+
+    function setupFormValidation() {
+        const form = document.getElementById('parqUpdateForm');
+        
+        form.addEventListener('submit', function(e) {
+            // Show loading state
+            const updateBtn = document.getElementById('updateBtn');
+            updateBtn.innerHTML = 'Updating...';
+            updateBtn.disabled = true;
+        });
+    }
+</script>
+
+{% endblock %}

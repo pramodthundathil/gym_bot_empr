@@ -117,6 +117,32 @@
       <div class="col-xl-12 col-sm-12 grid-margin stretch-card">
         <div class="card">
           <div class="card-body px-0 overflow-auto">
+            <h4 class="card-title pl-4">Documents</h4>
+            <div class="container">
+              <div class="content d-flex gap-5" style="justify-content: space-evenly; align-items: center; padding: 10px 0;">
+                <div class="items d-flex" style="gap: 1rem;">
+                  {% if member.health_history %}
+                    <a href="{% url 'health_history_detail' member.id %}" class="btn btn-warning btn-sm">View Health History</a>
+                  {% else %}
+                    <a href="{% url 'health_history_form' member.id %}" class="btn btn-warning btn-sm" target="_blank">Health History Form</a>
+                  {% endif %}
+                </div>
+                <div class="items">
+                  {% if parque != None %}
+                    <a href="{% url 'parq_detail' parque.id %}" class="btn btn-info btn-sm">View Par-Q Detail Form</a>
+                  {% else %}
+                    <a href="{% url 'parq_create' member.id %}" class="btn btn-danger btn-sm">Fill Par-Q</a>
+                  {% endif %}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-xl-12 col-sm-12 grid-margin stretch-card">
+        <div class="card">
+          <div class="card-body px-0 overflow-auto">
             <h4 class="card-title pl-4">Member Information</h4>
             <div class="table-responsive">
               <div class="row">

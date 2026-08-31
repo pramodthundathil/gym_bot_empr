@@ -69,6 +69,16 @@ urlpatterns = [
     # Export CSV
     path('reports/export-unpaid-csv/', views.export_unpaid_members_csv, name='export_unpaid_csv'),
     
+    # health history 
+    path('health-history/<int:member_id>/form/', views.health_history_form_view, name='health_history_form'),
+    path('health-history/<int:member_id>/detail/', views.health_history_detail_view, name='health_history_detail'),
+    path('health-history/<int:member_id>/delete/', views.delete_health_history, name='delete_health_history'),
+    path('health-history/summary/', views.health_history_summary_view, name='health_history_summary'),
+    path("success_on_health_history/",views.success_on_health_history,name="success_on_health_history"),
 
-    
+    #parque
+    path('parq/create/<int:pk>/', views.parq_form_create, name='parq_create'),
+    path('parq/update/<int:pk>/', views.parq_form_update, name='parq_update'),
+    path('parq/detail/<int:pk>/', views.parq_form_detail, name='parq_detail'),
+    path('parq/list/', views.parq_form_list, name='parq_list'),
 ]

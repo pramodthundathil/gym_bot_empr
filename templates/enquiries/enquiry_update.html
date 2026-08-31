@@ -1,0 +1,222 @@
+{% extends 'index.html' %}
+
+{% block title %}Update {{ enquiry.name }} - Enquiry Management{% endblock %}
+
+{% block content %}
+
+
+<div class="main-panel">
+    <div class="content-wrapper pb-0">
+
+
+
+
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2><i class="fas fa-edit"></i> Update Enquiry</h2>
+    <div>
+        <a href="{% url 'enquiry_detail' enquiry.pk %}" class="btn btn-outline-secondary">
+            <i class="fas fa-arrow-left"></i> Back to Details
+        </a>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-lg-8">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0"><i class="fas fa-user-edit"></i> Enquiry Information</h5>
+            </div>
+            <div class="card-body">
+                <form method="post">
+                    {% csrf_token %}
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="{{ form.name.id_for_label }}" class="form-label">
+                                    <strong>Name *</strong>
+                                </label>
+                                {{ form.name }}
+                                {% if form.name.errors %}
+                                    <div class="text-danger small">{{ form.name.errors.0 }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="{{ form.phone_number.id_for_label }}" class="form-label">
+                                    <strong>Phone Number *</strong>
+                                </label>
+                                {{ form.phone_number }}
+                                {% if form.phone_number.errors %}
+                                    <div class="text-danger small">{{ form.phone_number.errors.0 }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="{{ form.email.id_for_label }}" class="form-label">
+                                    <strong>Email</strong>
+                                </label>
+                                {{ form.email }}
+                                {% if form.email.errors %}
+                                    <div class="text-danger small">{{ form.email.errors.0 }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="{{ form.age.id_for_label }}" class="form-label">
+                                    <strong>Age</strong>
+                                </label>
+                                {{ form.age }}
+                                {% if form.age.errors %}
+                                    <div class="text-danger small">{{ form.age.errors.0 }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="{{ form.status.id_for_label }}" class="form-label">
+                                    <strong>Status</strong>
+                                </label>
+                                {{ form.status }}
+                                {% if form.status.errors %}
+                                    <div class="text-danger small">{{ form.status.errors.0 }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <div class="form-check">
+                                    {{ form.conversion }}
+                                    <label class="form-check-label" for="{{ form.conversion.id_for_label }}">
+                                        <strong>Converted</strong>
+                                    </label>
+                                </div>
+                                {% if form.conversion.errors %}
+                                    <div class="text-danger small">{{ form.conversion.errors.0 }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="{{ form.last_follow_up_date.id_for_label }}" class="form-label">
+                                    <strong>Last Follow-up Date</strong>
+                                </label>
+                                {{ form.last_follow_up_date }}
+                                {% if form.last_follow_up_date.errors %}
+                                    <div class="text-danger small">{{ form.last_follow_up_date.errors.0 }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="{{ form.next_follow_up_date.id_for_label }}" class="form-label">
+                                    <strong>Next Follow-up Date</strong>
+                                </label>
+                                {{ form.next_follow_up_date }}
+                                {% if form.next_follow_up_date.errors %}
+                                    <div class="text-danger small">{{ form.next_follow_up_date.errors.0 }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="d-flex gap-2">
+                        <button type="submit" class="btn btn-success">
+                            <i class="fas fa-save"></i> Update Enquiry
+                        </button>
+                        <a href="{% url 'enquiry_detail' enquiry.pk %}" class="btn btn-secondary">
+                            <i class="fas fa-times"></i> Cancel
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Current Information Summary -->
+    <div class="col-lg-4">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0"><i class="fas fa-info"></i> Current Info</h5>
+            </div>
+            <div class="card-body">
+                <div class="mb-2">
+                    <small class="text-muted">Created:</small><br>
+                    <strong>{{ enquiry.date_created|date:"M d, Y" }}</strong>
+                </div>
+                <div class="mb-2">
+                    <small class="text-muted">Last Updated:</small><br>
+                    <strong>{{ enquiry.date_updated|date:"M d, Y" }}</strong>
+                </div>
+                <div class="mb-2">
+                    <small class="text-muted">Total Follow-ups:</small><br>
+                    <span class="badge bg-info">{{ enquiry.number_of_followup }}</span>
+                </div>
+                <div class="mb-2">
+                    <small class="text-muted">Current Status:</small><br>
+                    <span class="badge status-{{ enquiry.status }} badge-status">
+                        {{ enquiry.get_status_display }}
+                    </span>
+                </div>
+                <div>
+                    <small class="text-muted">Conversion Status:</small><br>
+                    {% if enquiry.conversion %}
+                        <span class="badge bg-success"><i class="fas fa-check"></i> Converted</span>
+                    {% else %}
+                        <span class="badge bg-warning"><i class="fas fa-clock"></i> Not Converted</span>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        
+        <div class="card mt-3">
+            <div class="card-header">
+                <h5 class="card-title mb-0"><i class="fas fa-lightbulb"></i> Tips</h5>
+            </div>
+            <div class="card-body">
+                <ul class="list-unstyled small mb-0">
+                    <li class="mb-2">
+                        <i class="fas fa-check text-success"></i>
+                        Update status when there's progress
+                    </li>
+                    <li class="mb-2">
+                        <i class="fas fa-check text-success"></i>
+                        Schedule next follow-up dates
+                    </li>
+                    <li class="mb-2">
+                        <i class="fas fa-check text-success"></i>
+                        Mark as converted when deal closes
+                    </li>
+                    <li>
+                        <i class="fas fa-check text-success"></i>
+                        Keep contact information updated
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+    </div>
+</div>
+
+{% endblock %}

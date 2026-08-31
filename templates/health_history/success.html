@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Health Form Submitted Successfully - Strength Base Fitness</title>
+  <link rel="shortcut icon" href="{%static 'assets/images/Logo_Reveal_Slides.png' %}" />
+
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            font-family: 'Arial', sans-serif;
+        }
+        
+        .success-container {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        
+        .success-card {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            overflow: hidden;
+            max-width: 600px;
+            width: 100%;
+        }
+        
+        .success-header {
+            background: linear-gradient(135deg, #28a745, #20c997);
+            color: white;
+            padding: 40px 30px;
+            text-align: center;
+            position: relative;
+        }
+        
+        .success-header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="20" cy="20" r="2" fill="rgba(255,255,255,0.1)"/><circle cx="80" cy="40" r="1" fill="rgba(255,255,255,0.1)"/><circle cx="40" cy="80" r="1.5" fill="rgba(255,255,255,0.1)"/><circle cx="90" cy="80" r="1" fill="rgba(255,255,255,0.1)"/><circle cx="10" cy="60" r="1" fill="rgba(255,255,255,0.1)"/></svg>');
+        }
+        
+        .success-icon {
+            font-size: 4rem;
+            margin-bottom: 20px;
+            animation: bounce 2s infinite;
+        }
+        
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% {
+                transform: translateY(0);
+            }
+            40% {
+                transform: translateY(-10px);
+            }
+            60% {
+                transform: translateY(-5px);
+            }
+        }
+        
+        .success-body {
+            padding: 40px 30px;
+        }
+        
+        .gym-info {
+            background: linear-gradient(135deg, #f8f9ff, #e6f3ff);
+            border-radius: 15px;
+            padding: 25px;
+            margin: 25px 0;
+            border-left: 5px solid #007bff;
+        }
+        
+        .gym-logo {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #007bff;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+        
+        .address-info {
+            color: #666;
+            line-height: 1.6;
+        }
+        
+        .contact-info {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+            font-size: 0.95rem;
+        }
+        
+        .contact-info i {
+            width: 20px;
+            margin-right: 10px;
+            color: #007bff;
+        }
+        
+        .next-steps {
+            background: linear-gradient(135deg, #fff3cd, #ffeaa7);
+            border-radius: 15px;
+            padding: 25px;
+            margin: 25px 0;
+            border-left: 5px solid #ffc107;
+        }
+        
+        .step-item {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 15px;
+        }
+        
+        .step-number {
+            background: #007bff;
+            color: white;
+            border-radius: 50%;
+            width: 25px;
+            height: 25px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 15px;
+            font-size: 0.8rem;
+            font-weight: bold;
+            flex-shrink: 0;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #007bff, #0056b3);
+            border: none;
+            border-radius: 25px;
+            padding: 12px 30px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(0, 123, 255, 0.3);
+        }
+        
+        .btn-outline-secondary {
+            border: 2px solid #6c757d;
+            border-radius: 25px;
+            padding: 12px 30px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-outline-secondary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(108, 117, 125, 0.3);
+        }
+        
+        .footer-text {
+            text-align: center;
+            color: #666;
+            font-size: 0.9rem;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #eee;
+        }
+        
+        @media (max-width: 768px) {
+            .success-container {
+                padding: 10px;
+            }
+            
+            .success-header {
+                padding: 30px 20px;
+            }
+            
+            .success-body {
+                padding: 30px 20px;
+            }
+            
+            .gym-info,
+            .next-steps {
+                padding: 20px;
+                margin: 20px 0;
+            }
+            
+            .success-icon {
+                font-size: 3rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="success-container">
+        <div class="success-card">
+            <div class="success-header">
+                <div class="success-icon">
+                    <i class="fas fa-check-circle"></i>
+                </div>
+                <h1 class="mb-0">Form Submitted Successfully!</h1>
+                <p class="mb-0 mt-2 opacity-75">Thank you for completing your health history questionnaire</p>
+            </div>
+            
+            <div class="success-body">
+                <div class="text-center mb-4">
+                    <h3 class="text-success mb-3">
+                        <i class="fas fa-thumbs-up me-2"></i>
+                        All Set!
+                    </h3>
+                    <p class="lead text-muted">
+                        Your health information has been securely recorded and our team will review it before your first training session.
+                    </p>
+                </div>
+                
+                <div class="gym-info">
+                    <div class="gym-logo">
+                                        <img src="{% static 'assets/images/Logo_Reveal_Slides.png' %}" alt="Strength Base Gym Logo" width="100px" />
+<br>
+                        <!-- STRENGTH BASE FITNESS -->
+                    </div>
+                    <div class="address-info text-center">
+                        <div class="contact-info justify-content-center">
+                            <i class="fas fa-map-marker-alt"></i>
+                            <span>Opp Heera Apartments, Tank Bund Road</span>
+                        </div>
+                        <div class="contact-info justify-content-center">
+                            <i class="fas fa-road"></i>
+                            <span>Chilavannur Rd, Kochi, Kerala 682020</span>
+                        </div>
+                        <div class="contact-info justify-content-center mt-3">
+                            <i class="fas fa-phone"></i>
+                            <span>Contact us for any queries</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="next-steps">
+                    <h5 class="text-warning mb-3">
+                        <i class="fas fa-route me-2"></i>
+                        What's Next?
+                    </h5>
+                    <div class="step-item">
+                        <div class="step-number">1</div>
+                        <div>
+                            <strong>Review Process:</strong> Our certified trainers will review your health history within 24 hours.
+                        </div>
+                    </div>
+                    <div class="step-item">
+                        <div class="step-number">2</div>
+                        <div>
+                            <strong>Initial Consultation:</strong> We'll schedule a consultation to discuss your fitness goals and create a personalized plan.
+                        </div>
+                    </div>
+                    <div class="step-item">
+                        <div class="step-number">3</div>
+                        <div>
+                            <strong>Start Training:</strong> Begin your fitness journey with a customized workout program designed just for you!
+                        </div>
+                    </div>
+                </div>
+                
+                
+                
+                <div class="footer-text">
+                    <p class="mb-1">
+                        <i class="fas fa-shield-alt me-2 text-success"></i>
+                        Your information is secure and confidential
+                    </p>
+                    <p class="mb-0">
+                        If you have any questions, please don't hesitate to contact us.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Add some interactive animations
+        document.addEventListener('DOMContentLoaded', function() {
+            // Animate the success card on load
+            const card = document.querySelector('.success-card');
+            card.style.opacity = '0';
+            card.style.transform = 'translateY(30px)';
+            
+            setTimeout(() => {
+                card.style.transition = 'all 0.6s ease';
+                card.style.opacity = '1';
+                card.style.transform = 'translateY(0)';
+            }, 100);
+            
+            // Add hover effect to step items
+            const stepItems = document.querySelectorAll('.step-item');
+            stepItems.forEach(item => {
+                item.addEventListener('mouseenter', function() {
+                    this.style.transform = 'translateX(5px)';
+                    this.style.transition = 'transform 0.3s ease';
+                });
+                
+                item.addEventListener('mouseleave', function() {
+                    this.style.transform = 'translateX(0)';
+                });
+            });
+        });
+    </script>
+</body>
+</html>

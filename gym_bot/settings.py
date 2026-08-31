@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     'Index.apps.IndexConfig',
     'Members.apps.MembersConfig',
     'Finance.apps.FinanceConfig',
+    'enquiry',
 ]
 
 

@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Registration QR Code - Empire Fitness</title>
+    <style>
+        @page {
+            size: A4;
+            margin: 20mm;
+        }
+        body {
+            font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+            color: #333333;
+            background-color: #ffffff;
+            margin: 0;
+            padding: 0;
+            text-align: center;
+        }
+        .header {
+            margin-top: 10mm;
+            margin-bottom: 10mm;
+        }
+        .logo-container {
+            height: 40mm;
+            text-align: center;
+            margin-bottom: 5mm;
+        }
+        .logo-img {
+            max-height: 35mm;
+            display: inline-block;
+        }
+        .title {
+            font-size: 32pt;
+            font-weight: bold;
+            color: #d97706; /* amber-600 */
+            margin: 0;
+            letter-spacing: 0.5px;
+        }
+        .subtitle {
+            font-size: 16pt;
+            color: #666666;
+            margin: 2mm 0 0 0;
+        }
+        .divider {
+            height: 1px;
+            background-color: #e5e7eb;
+            margin: 10mm 0;
+        }
+        .qr-section {
+            margin: 10mm 0;
+            text-align: center;
+        }
+        .qr-box {
+            display: inline-block;
+            border: 2px solid #d97706;
+            border-radius: 8px;
+            padding: 6mm;
+            background-color: #ffffff;
+        }
+        .qr-img {
+            width: 70mm;
+            height: 70mm;
+        }
+        .instructions {
+            margin-top: 10mm;
+            padding: 0 10mm;
+        }
+        .instructions h3 {
+            font-size: 16pt;
+            color: #333333;
+            margin-bottom: 4mm;
+        }
+        .instructions p {
+            font-size: 12pt;
+            color: #666666;
+            line-height: 1.5;
+            margin: 2mm 0;
+        }
+        .footer {
+            position: absolute;
+            bottom: 5mm;
+            left: 0;
+            right: 0;
+            text-align: center;
+            font-size: 10pt;
+            color: #999999;
+            border-top: 1px solid #e5e7eb;
+            padding-top: 5mm;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <div class="logo-container">
+            {% if logo_base64 %}
+                <img class="logo-img" src="data:image/png;base64,{{ logo_base64 }}" alt="Empire Fitness Logo">
+            {% else %}
+                <div style="font-size: 24pt; font-weight: bold; color: #d97706; margin-top: 10mm;">EMPIRE FITNESS</div>
+            {% endif %}
+        </div>
+        <div class="title">EMPIRE FITNESS</div>
+        <div class="subtitle">Walk-In Member Self-Registration Portal</div>
+    </div>
+
+    <div class="divider"></div>
+
+    <div class="qr-section">
+        <div class="qr-box">
+            {% if qr_base64 %}
+                <img class="qr-img" src="data:image/png;base64,{{ qr_base64 }}" alt="Registration QR Code">
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="instructions">
+        <h3>How to Register:</h3>
+        <p>1. Open the Camera app on your smartphone.</p>
+        <p>2. Point your camera at the QR code above.</p>
+        <p>3. Tap the link banner that appears on your screen.</p>
+        <p>4. Complete the registration form and medical questionnaire on your phone.</p>
+    </div>
+
+    <div class="footer">
+        Empire Fitness Club &bull; Walk-In Self Registration Flyer
+    </div>
+
+</body>
+</html>

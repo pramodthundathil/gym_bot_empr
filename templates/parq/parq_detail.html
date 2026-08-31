@@ -1,0 +1,488 @@
+{% extends 'index.html' %}
+{% block content %}
+
+<style>
+    .parq-container {
+        max-width: 1000px;
+        margin: 0 auto;
+        background: #fff;
+        box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+        border-radius: 8px;
+    }
+
+    .parq-header {
+        background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+        color: white;
+        padding: 2rem;
+        text-align: center;
+        border-radius: 8px 8px 0 0;
+    }
+
+    .parq-content {
+        padding: 2rem;
+    }
+
+    .section-title {
+        background: #f8f9fa;
+        border-left: 4px solid #4facfe;
+        padding: 1rem;
+        margin: 2rem 0 1rem 0;
+        font-weight: 600;
+        border-radius: 0 8px 8px 0;
+    }
+
+    .info-card {
+        border: 1px solid #dee2e6;
+        border-radius: 8px;
+        padding: 1.5rem;
+        margin: 1rem 0;
+        background: #f8f9fa;
+    }
+
+    .member-card {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border-radius: 8px;
+        padding: 1.5rem;
+        margin: 1rem 0;
+    }
+
+    .emergency-card {
+        background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+        border-radius: 8px;
+        padding: 1.5rem;
+        margin: 1rem 0;
+    }
+
+    .question-result {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 1rem;
+        margin: 0.5rem 0;
+        border-radius: 8px;
+        border: 1px solid #dee2e6;
+    }
+
+    .question-result.yes {
+        background: #f8d7da;
+        border-color: #f5c6cb;
+        color: #721c24;
+    }
+
+    .question-result.no {
+        background: #d4edda;
+        border-color: #c3e6cb;
+        color: #155724;
+    }
+
+    .answer-badge {
+        padding: 0.5rem 1rem;
+        border-radius: 20px;
+        font-weight: 600;
+        font-size: 0.9em;
+    }
+
+    .answer-yes {
+        background: #dc3545;
+        color: white;
+    }
+
+    .answer-no {
+        background: #28a745;
+        color: white;
+    }
+
+    .signature-display {
+        text-align: center;
+        margin: 1rem 0;
+        padding: 1rem;
+        border: 1px solid #dee2e6;
+        border-radius: 8px;
+        background: #f8f9fa;
+    }
+
+    .signature-image {
+        max-width: 300px;
+        max-height: 100px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        background: white;
+    }
+
+    .status-card {
+        padding: 1.5rem;
+        border-radius: 8px;
+        margin: 1rem 0;
+        text-align: center;
+    }
+
+    .status-requires-consent {
+        background: #fff3cd;
+        border: 1px solid #ffeaa7;
+        color: #856404;
+        border-left: 4px solid #f39c12;
+    }
+
+    .status-approved {
+        background: #d4edda;
+        border: 1px solid #c3e6cb;
+        color: #155724;
+        border-left: 4px solid #28a745;
+    }
+
+    .actions-section {
+        background: #f8f9fa;
+        border-radius: 8px;
+        padding: 2rem;
+        text-align: center;
+        margin-top: 2rem;
+    }
+
+    .btn {
+        padding: 1rem 2rem;
+        border: none;
+        border-radius: 8px;
+        font-size: 1em;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        display: inline-block;
+        margin: 0.5rem;
+    }
+
+    .btn-primary {
+        background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+        color: white;
+    }
+
+    .btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 15px rgba(79, 172, 254, 0.4);
+        color: white;
+        text-decoration: none;
+    }
+
+    .btn-secondary {
+        background: #6c757d;
+        color: white;
+    }
+
+    .btn-secondary:hover {
+        background: #5a6268;
+        color: white;
+        text-decoration: none;
+    }
+
+    .btn-warning {
+        background: #ffc107;
+        color: #212529;
+    }
+
+    .btn-warning:hover {
+        background: #e0a800;
+        color: #212529;
+        text-decoration: none;
+    }
+
+    .specify-text {
+        margin-top: 0.5rem;
+        padding: 0.5rem;
+        background: #e9ecef;
+        border-radius: 4px;
+        font-style: italic;
+    }
+
+    .grid-2 {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 2rem;
+    }
+
+    .grid-3 {
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr;
+        gap: 1.5rem;
+    }
+
+    @media (max-width: 768px) {
+
+        .grid-2,
+        .grid-3 {
+            grid-template-columns: 1fr;
+        }
+
+        .parq-content {
+            padding: 1rem;
+        }
+
+        .actions-section .btn {
+            display: block;
+            width: 100%;
+            margin: 0.5rem 0;
+        }
+    }
+</style>
+<div class="main-panel">
+    <div class="content-wrapper pb-0">
+        <div class="parq-container">
+            <div class="parq-header">
+                <h1>PAR-Q Form Details</h1>
+                <p>Physical Activity Readiness Questionnaire</p>
+            </div>
+
+            <div class="parq-content">
+
+                <!-- Member Information -->
+                <div class="member-card">
+                    <h4><strong>Member Information</strong></h4>
+                    <div class="grid-2">
+                        <div>
+                            <strong>Name:</strong> {{ parq_form.member.name }}<br>
+                            <strong>Phone:</strong> {{ parq_form.member.phone|default:"Not provided" }}<br>
+                            <strong>Mobile:</strong> {{ parq_form.member.mobile|default:"Not provided" }}
+                        </div>
+                        <div>
+                            <strong>Form Created:</strong> {{ parq_form.created_at|date:"F d, Y \a\t g:i A" }}<br>
+                            <strong>Last Updated:</strong> {{ parq_form.updated_at|date:"F d, Y \a\t g:i A" }}<br>
+                            <strong>Status:</strong>
+                            {% if parq_form.is_completed %}
+                            <span style="color: #28a745;">✓ Completed</span>
+                            {% else %}
+                            <span style="color: #ffc107;">⚠ Incomplete</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Emergency Contact -->
+                <div class="section-title">
+                    Emergency Contact Details
+                </div>
+
+                <div class="emergency-card">
+                    <div class="grid-3">
+                        <div>
+                            <strong>Name:</strong><br>
+                            {{ parq_form.emergency_contact_name|default:"Not provided" }}
+                        </div>
+                        <div>
+                            <strong>Phone:</strong><br>
+                            {{ parq_form.emergency_contact_phone|default:"Not provided" }}
+                        </div>
+                        <div>
+                            <strong>Mobile:</strong><br>
+                            {{ parq_form.emergency_contact_mobile|default:"Not provided" }}
+                        </div>
+                    </div>
+                </div>
+
+                <!-- PAR-Q Questions Results -->
+                <div class="section-title">
+                    PAR-Q Questions & Responses
+                </div>
+
+                <div class="question-result {% if parq_form.heart_condition %}yes{% else %}no{% endif %}">
+                    <div>
+                        <strong>1.</strong> Has your doctor ever said that you have a heart condition and recommended
+                        only medically supervised activity?
+                    </div>
+                    <div
+                        class="answer-badge {% if parq_form.heart_condition %}answer-yes{% else %}answer-no{% endif %}">
+                        {% if parq_form.heart_condition %}YES{% else %}NO{% endif %}
+                    </div>
+                </div>
+
+                <div class="question-result {% if parq_form.chest_pain_activity %}yes{% else %}no{% endif %}">
+                    <div>
+                        <strong>2.</strong> Do you have chest pain brought on by physical activity?
+                    </div>
+                    <div
+                        class="answer-badge {% if parq_form.chest_pain_activity %}answer-yes{% else %}answer-no{% endif %}">
+                        {% if parq_form.chest_pain_activity %}YES{% else %}NO{% endif %}
+                    </div>
+                </div>
+
+                <div class="question-result {% if parq_form.chest_pain_last_month %}yes{% else %}no{% endif %}">
+                    <div>
+                        <strong>3.</strong> Have you developed chest pain in the last month?
+                    </div>
+                    <div
+                        class="answer-badge {% if parq_form.chest_pain_last_month %}answer-yes{% else %}answer-no{% endif %}">
+                        {% if parq_form.chest_pain_last_month %}YES{% else %}NO{% endif %}
+                    </div>
+                </div>
+
+                <div class="question-result {% if parq_form.lose_consciousness %}yes{% else %}no{% endif %}">
+                    <div>
+                        <strong>4.</strong> Do you tend to lose consciousness or fall over as a result of dizziness?
+                    </div>
+                    <div
+                        class="answer-badge {% if parq_form.lose_consciousness %}answer-yes{% else %}answer-no{% endif %}">
+                        {% if parq_form.lose_consciousness %}YES{% else %}NO{% endif %}
+                    </div>
+                </div>
+
+                <div class="question-result {% if parq_form.bone_joint_problem %}yes{% else %}no{% endif %}">
+                    <div>
+                        <strong>5.</strong> Do you have a bone or joint problem that could be aggravated by the proposed
+                        physical activity?
+                    </div>
+                    <div
+                        class="answer-badge {% if parq_form.bone_joint_problem %}answer-yes{% else %}answer-no{% endif %}">
+                        {% if parq_form.bone_joint_problem %}YES{% else %}NO{% endif %}
+                    </div>
+                </div>
+
+                <div class="question-result {% if parq_form.medical_conditions %}yes{% else %}no{% endif %}">
+                    <div>
+                        <strong>6.</strong> Do you suffer from asthma, diabetes, high blood pressure, epilepsy or a
+                        heart condition?
+                        {% if parq_form.medical_conditions and parq_form.medical_conditions_specify %}
+                        <div class="specify-text">
+                            <strong>Details:</strong> {{ parq_form.medical_conditions_specify }}
+                        </div>
+                        {% endif %}
+                    </div>
+                    <div
+                        class="answer-badge {% if parq_form.medical_conditions %}answer-yes{% else %}answer-no{% endif %}">
+                        {% if parq_form.medical_conditions %}YES{% else %}NO{% endif %}
+                    </div>
+                </div>
+
+                <div class="question-result {% if parq_form.current_treatment %}yes{% else %}no{% endif %}">
+                    <div>
+                        <strong>7.</strong> Do you have any current conditions or injuries that are being treated by a
+                        doctor, physiotherapist, or health professional?
+                        {% if parq_form.current_treatment and parq_form.current_treatment_specify %}
+                        <div class="specify-text">
+                            <strong>Details:</strong> {{ parq_form.current_treatment_specify }}
+                        </div>
+                        {% endif %}
+                    </div>
+                    <div
+                        class="answer-badge {% if parq_form.current_treatment %}answer-yes{% else %}answer-no{% endif %}">
+                        {% if parq_form.current_treatment %}YES{% else %}NO{% endif %}
+                    </div>
+                </div>
+
+                <div class="question-result {% if parq_form.other_reason %}yes{% else %}no{% endif %}">
+                    <div>
+                        <strong>8.</strong> Do you know of any other reason why you should not take part in exercise?
+                        {% if parq_form.other_reason and parq_form.other_reason_specify %}
+                        <div class="specify-text">
+                            <strong>Details:</strong> {{ parq_form.other_reason_specify }}
+                        </div>
+                        {% endif %}
+                    </div>
+                    <div class="answer-badge {% if parq_form.other_reason %}answer-yes{% else %}answer-no{% endif %}">
+                        {% if parq_form.other_reason %}YES{% else %}NO{% endif %}
+                    </div>
+                </div>
+
+                <!-- Status Assessment -->
+                {% if parq_form.requires_doctor_consent %}
+                <div class="status-card status-requires-consent">
+                    <h4>⚠ Doctor's Consent Required</h4>
+                    <p>Based on the responses provided, this participant must obtain doctor's consent before
+                        participating in physical activities.</p>
+                    <p><strong>Action Required:</strong> Submit a doctor's consent letter before starting any training
+                        program.</p>
+                </div>
+                {% else %}
+                <div class="status-card status-approved">
+                    <h4>✅ Cleared for Physical Activity</h4>
+                    <p>Based on the responses provided, this participant can safely participate in physical activities
+                        without requiring doctor's consent.</p>
+                </div>
+                {% endif %}
+
+                <!-- Signatures Section -->
+                <div class="section-title">
+                    Signatures
+                </div>
+
+                <div class="grid-3">
+                    <!-- Participant Signature -->
+                    <div class="signature-display">
+                        <h6><strong>Participant Signature</strong></h6>
+                        {% if parq_form.participant_signature %}
+                        <img src="{{ parq_form.participant_signature }}" alt="Participant Signature"
+                            class="signature-image">
+                        <p><small>Date: {{ parq_form.participant_signature_date|date:"F d, Y" }}</small></p>
+                        {% else %}
+                        <p class="text-muted">No signature provided</p>
+                        {% endif %}
+                    </div>
+
+                    <!-- Parent/Guardian Signature -->
+                    <div class="signature-display">
+                        <h6><strong>Parent/Guardian Signature</strong></h6>
+                        {% if parq_form.parent_guardian_signature %}
+                        <img src="{{ parq_form.parent_guardian_signature }}" alt="Parent/Guardian Signature"
+                            class="signature-image">
+                        <p><small>Date: {{ parq_form.parent_guardian_signature_date|date:"F d, Y" }}</small></p>
+                        {% else %}
+                        <p class="text-muted">No signature provided</p>
+                        {% endif %}
+                    </div>
+
+                    <!-- Tutor's Signature -->
+                    <div class="signature-display">
+                        <h6><strong>Tutor's Signature</strong></h6>
+                        {% if parq_form.tutor_signature %}
+                        <img src="{{ parq_form.tutor_signature }}" alt="Tutor's Signature" class="signature-image">
+                        <p><small>Date: {{ parq_form.tutor_signature_date|date:"F d, Y" }}</small></p>
+                        {% else %}
+                        <p class="text-muted">No signature provided</p>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <!-- Actions Section -->
+                <div class="actions-section">
+                    <h5>Available Actions</h5>
+                    <div>
+                        <a href="{% url 'parq_update' parq_form.pk %}" class="btn btn-primary">
+                            Update Form
+                        </a>
+                        <a href="{% url 'parq_list' %}" class="btn btn-secondary">
+                            Back to List
+                        </a>
+                        <button onclick="window.print()" class="btn btn-warning">
+                            Print Form
+                        </button>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Print Styles -->
+<style media="print">
+    .actions-section {
+        display: none !important;
+    }
+
+    .parq-container {
+        box-shadow: none !important;
+        max-width: 100% !important;
+    }
+
+    .btn {
+        display: none !important;
+    }
+
+    body {
+        background: white !important;
+    }
+
+    .signature-display {
+        page-break-inside: avoid;
+    }
+</style>
+
+{% endblock %}

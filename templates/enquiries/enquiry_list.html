@@ -1,0 +1,177 @@
+{% extends 'index.html' %}
+
+{% block title %}Enquiry List - Enquiry Management{% endblock %}
+
+{% block content %}
+<div class="main-panel">
+    <div class="content-wrapper pb-0">
+
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2><i class="fas fa-list"></i> Enquiry List ({{ total_enquiries }} total)</h2>
+            <a href="{% url 'enquiry_create' %}" class="btn btn-primary">
+                <i class="fas fa-plus"></i> New Enquiry
+            </a>
+        </div>
+
+        <!-- Filter Form -->
+        <div class="card mb-4">
+            <div class="card-body">
+                <h5 class="card-title"><i class="fas fa-filter"></i> Filters</h5>
+                <form method="get" class="row g-3">
+                    <div class="col-md-3">
+                        <label class="form-label">Conversion Status</label>
+                        {{ filter_form.conversion }}
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label">Status</label>
+                        {{ filter_form.status }}
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">Search</label>
+                        {{ filter_form.search }}
+                    </div>
+                    <div class="col-md-2 d-flex align-items-end">
+                        <button type="submit" class="btn btn-outline-primary me-2">
+                            <i class="fas fa-search"></i> Filter
+                        </button>
+                        <a href="{% url 'enquiry_list' %}" class="btn btn-outline-secondary">
+                            <i class="fas fa-times"></i> Clear
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Enquiries Table -->
+        <div class="card">
+            <div class="card-body">
+                {% if page_obj %}
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead class="table-dark">
+                            <tr>
+                                <th>Name</th>
+                                <th>Phone</th>
+                                <th>Email</th>
+                                <th>Age</th>
+                                <th>Status</th>
+                                <th>Follow-ups</th>
+                                <th>Converted</th>
+                                <th>Created</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for enquiry in page_obj %}
+                            <tr>
+                                <td>
+                                    <strong>{{ enquiry.name }}</strong>
+                                </td>
+                                <td>{{ enquiry.phone_number }}</td>
+                                <td>
+                                    {% if enquiry.email %}
+                                    {{ enquiry.email }}
+                                    {% else %}
+                                    <span class="text-muted">-</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if enquiry.age %}
+                                    {{ enquiry.age }}
+                                    {% else %}
+                                    <span class="text-muted">-</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <span class="badge badge-status status-{{ enquiry.status }}">
+                                        {{ enquiry.get_status_display }}
+                                    </span>
+                                </td>
+                                <td>
+                                    <span class="badge bg-info">{{ enquiry.number_of_followup }}</span>
+                                </td>
+                                <td>
+                                    {% if enquiry.conversion %}
+                                    <span class="badge bg-success"><i class="fas fa-check"></i> Yes</span>
+                                    {% else %}
+                                    <span class="badge bg-warning"><i class="fas fa-clock"></i> No</span>
+                                    {% endif %}
+                                </td>
+                                <td>{{ enquiry.date_created|date:"M d, Y" }}</td>
+                                <td>
+                                    <div class="btn-group" role="group">
+                                        <a href="{% url 'enquiry_detail' enquiry.pk %}"
+                                            class="btn btn-sm btn-outline-primary" title="View Details">
+                                            <i class="mdi mdi-eye"></i>
+                                        </a>
+                                        <a href="{% url 'enquiry_update' enquiry.pk %}"
+                                            class="btn btn-sm btn-outline-secondary" title="Edit">
+                                            <i class="mdi mdi-tooltip-edit"></i>
+                                        </a>
+                                        <a href="{% url 'add_status_update' enquiry.pk %}"
+                                            class="btn btn-sm btn-outline-success" title="Add Follow-up">
+                                            <i class="mdi mdi-plus"></i>
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Pagination -->
+                {% if page_obj.has_other_pages %}
+                <nav aria-label="Enquiry pagination">
+                    <ul class="pagination justify-content-center mt-4">
+                        {% if page_obj.has_previous %}
+                        <li class="page-item">
+                            <a class="page-link"
+                                href="?page={{ page_obj.previous_page_number }}{% if request.GET.conversion %}&conversion={{ request.GET.conversion }}{% endif %}{% if request.GET.status %}&status={{ request.GET.status }}{% endif %}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}">
+                                Previous
+                            </a>
+                        </li>
+                        {% endif %}
+
+                        {% for num in page_obj.paginator.page_range %}
+                        {% if page_obj.number == num %}
+                        <li class="page-item active">
+                            <span class="page-link">{{ num }}</span>
+                        </li>
+                        {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %} <li
+                            class="page-item">
+                            <a class="page-link"
+                                href="?page={{ num }}{% if request.GET.conversion %}&conversion={{ request.GET.conversion }}{% endif %}{% if request.GET.status %}&status={{ request.GET.status }}{% endif %}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}">
+                                {{ num }}
+                            </a>
+                            </li>
+                            {% endif %}
+                            {% endfor %}
+
+                            {% if page_obj.has_next %}
+                            <li class="page-item">
+                                <a class="page-link"
+                                    href="?page={{ page_obj.next_page_number }}{% if request.GET.conversion %}&conversion={{ request.GET.conversion }}{% endif %}{% if request.GET.status %}&status={{ request.GET.status }}{% endif %}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}">
+                                    Next
+                                </a>
+                            </li>
+                            {% endif %}
+                    </ul>
+                </nav>
+                {% endif %}
+                {% else %}
+                <div class="text-center py-5">
+                    <i class="fas fa-inbox fa-3x text-muted mb-3"></i>
+                    <h4 class="text-muted">No enquiries found</h4>
+                    <p class="text-muted">Try adjusting your filters or create a new enquiry.</p>
+                    <a href="{% url 'enquiry_create' %}" class="btn btn-primary">
+                        <i class="fas fa-plus"></i> Create New Enquiry
+                    </a>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+
+    </div>
+</div>
+{% endblock %}

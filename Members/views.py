@@ -215,6 +215,11 @@ def Member(request):
 def MembersSingleView(request,pk):
     member = MemberData.objects.get(id = pk)
     try:
+        from .models import ParqForm
+        parque = ParqForm.objects.get(member=member)
+    except Exception:
+        parque = None
+    try:
         subscription = Subscription.objects.get(Member = member)
     except:
         subscription = None
@@ -233,7 +238,8 @@ def MembersSingleView(request,pk):
         'sub_form':sub_form,
         "access":access,
         "notification_payments":notification_payments,
-        "payments":payments
+        "payments":payments,
+        "parque":parque
 
     }
     return render(request,"memberssingleview.html",context)
@@ -1630,3 +1636,230 @@ def update_member_status(request, member_id):
             return JsonResponse({'success': False, 'error': 'Record not found'})
     
     return JsonResponse({'success': False, 'error': 'Invalid request method'})
+
+
+# --- Health History and PAR-Q Form Views ---
+from django.shortcuts import get_object_or_404
+from django.views.decorators.http import require_http_methods
+from django.views.generic import CreateView, UpdateView, DetailView
+from django.urls import reverse_lazy
+import base64
+from django.core.files.base import ContentFile
+from .models import HealthHistory, Medication, ParqForm
+from .forms import HealthHistoryForm, MedicationFormSet, ParqFormModelForm, ParqUpdateForm
+
+def health_history_form_view(request, member_id):
+    """View to create or edit health history for a member"""
+    member = get_object_or_404(MemberData, id=member_id)
+    
+    try:
+        health_history = member.health_history
+        is_new = False
+    except HealthHistory.DoesNotExist:
+        health_history = None
+        is_new = True
+    
+    if request.method == 'POST':
+        form = HealthHistoryForm(request.POST, instance=health_history)
+        medication_formset = MedicationFormSet(request.POST, instance=health_history)
+        
+        if form.is_valid() and medication_formset.is_valid():
+            health_history = form.save(commit=False)
+            health_history.member = member
+            health_history.save()
+
+            if health_history.has_risky_heart_conditions or health_history.has_risky_health_conditions:
+                health_history.member.risk_medical = True
+                health_history.member.save()
+
+            medication_formset.instance = health_history
+            medication_formset.save()
+
+            if health_history.has_risky_heart_conditions:
+                messages.success(request, f'Health history {"created" if is_new else "updated"} successfully for {member.First_Name}!, Please Fill Par-Q')
+                return redirect('parq_create', pk = health_history.member.id)
+            else:
+                messages.success(request, f'Health history {"created" if is_new else "updated"} successfully for {member.First_Name}!')
+                return redirect('success_on_health_history')
+            
+        else:
+            messages.error(request, f'Please correct the errors below.{form.errors}, {medication_formset.errors}')
+    else:
+        form = HealthHistoryForm(instance=health_history)
+        medication_formset = MedicationFormSet(instance=health_history)
+    
+    context = {
+        'form': form,
+        'medication_formset': medication_formset,
+        'member': member,
+        'is_new': is_new,
+    }
+    return render(request, 'health_history/form.html', context)
+
+def success_on_health_history(request):
+    return render(request,"health_history/success.html")
+
+
+@login_required(login_url='SignIn')
+def health_history_detail_view(request, member_id):
+    """View to display health history details for a member"""
+    member = get_object_or_404(MemberData, id=member_id)
+    
+    try:
+        health_history = member.health_history
+    except HealthHistory.DoesNotExist:
+        messages.info(request, f'No health history found for {member.First_Name}. Please complete the health questionnaire.')
+        return redirect('health_history_form', member_id=member.id)
+    
+    medications = health_history.medications.all()
+    
+    context = {
+        'member': member,
+        'health_history': health_history,
+        'medications': medications,
+    }
+    return render(request, 'health_history/detail.html', context)
+
+
+@login_required(login_url='SignIn')
+def member_list_view(request):
+    """View to list all members with their health history status"""
+    members = MemberData.objects.filter(Active_status=True).order_by('First_Name')
+    
+    member_data = []
+    for member in members:
+        try:
+            health_history = member.health_history
+            has_health_history = True
+            last_updated = health_history.last_updated
+        except HealthHistory.DoesNotExist:
+            has_health_history = False
+            last_updated = None
+        
+        member_data.append({
+            'member': member,
+            'has_health_history': has_health_history,
+            'last_updated': last_updated,
+        })
+    
+    context = {
+        'member_data': member_data,
+    }
+    return render(request, 'health_history/member_list.html', context)
+
+@require_http_methods(["DELETE"])
+@login_required(login_url='SignIn')
+def delete_health_history(request, member_id):
+    """AJAX view to delete health history"""
+    member = get_object_or_404(MemberData, id=member_id)
+    
+    try:
+        health_history = member.health_history
+        health_history.delete()
+        return JsonResponse({'success': True, 'message': 'Health history deleted successfully.'})
+    except HealthHistory.DoesNotExist:
+        return JsonResponse({'success': False, 'message': 'No health history found.'})
+
+@login_required(login_url='SignIn')
+def health_history_summary_view(request):
+    """View to show summary of all health histories"""
+    health_histories = HealthHistory.objects.select_related('member').order_by('-last_updated')
+    
+    context = {
+        'health_histories': health_histories,
+    }
+    return render(request, 'health_history/summary.html', context)
+
+
+def parq_form_create(request, pk):
+    """Create new PAR-Q form"""
+    member = get_object_or_404(MemberData, id = pk)
+    if request.method == 'POST':
+        form = ParqFormModelForm(request.POST)
+        if form.is_valid():
+            parq_form = form.save(commit=False)
+            
+            # Handle signature data
+            if request.POST.get('participant_signature_data'):
+                parq_form.participant_signature = request.POST.get('participant_signature_data')
+            if request.POST.get('parent_guardian_signature_data'):
+                parq_form.parent_guardian_signature = request.POST.get('parent_guardian_signature_data')
+            if request.POST.get('tutor_signature_data'):
+                parq_form.tutor_signature = request.POST.get('tutor_signature_data')
+            
+            parq_form.member = member
+            parq_form.is_completed = True
+            parq_form.save()
+            
+            messages.success(request, 'PAR-Q Form submitted successfully!')
+            return redirect('parq_detail', pk=parq_form.pk)
+        else:
+            messages.error(request, 'Please correct the errors below.')
+    else:
+        form = ParqFormModelForm()
+    
+    context = {
+        'form': form,
+        'member':member,
+        'title': 'Physical Activity Readiness Questionnaire (PAR-Q)'
+    }
+    return render(request, 'parq/parq_form.html', context)
+
+def parq_form_update(request, pk):
+    """Update existing PAR-Q form"""
+    parq_form = get_object_or_404(ParqForm, pk=pk)
+    
+    if request.method == 'POST':
+        form = ParqUpdateForm(request.POST, instance=parq_form)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'PAR-Q Form updated successfully!')
+            return redirect('parq_detail', pk=parq_form.pk)
+        else:
+            messages.error(request, 'Please correct the errors below.')
+    else:
+        form = ParqUpdateForm(instance=parq_form)
+    
+    context = {
+        'form': form,
+        'parq_form': parq_form,
+        'title': 'Update PAR-Q Form'
+    }
+    return render(request, 'parq/parq_update_form.html', context)
+
+def parq_form_detail(request, pk):
+    """View PAR-Q form details"""
+    parq_form = get_object_or_404(ParqForm, pk=pk)
+    
+    context = {
+        'parq_form': parq_form,
+        'title': 'PAR-Q Form Details'
+    }
+    return render(request, 'parq/parq_detail.html', context)
+
+def parq_form_list(request):
+    """List all PAR-Q forms"""
+    parq_forms = ParqForm.objects.all().order_by('-created_at')
+    
+    context = {
+        'parq_forms': parq_forms,
+        'title': 'PAR-Q Forms'
+    }
+    return render(request, 'parq/parq_list.html', context)
+
+class ParqFormCreateView(CreateView):
+    model = ParqForm
+    form_class = ParqFormModelForm
+    template_name = 'parq/parq_form.html'
+    success_url = reverse_lazy('parq_list')
+
+class ParqFormUpdateView(UpdateView):
+    model = ParqForm
+    form_class = ParqUpdateForm
+    template_name = 'parq/parq_update_form.html'
+    success_url = reverse_lazy('parq_list')
+
+class ParqFormDetailView(DetailView):
+    model = ParqForm
+    template_name = 'parq/parq_detail.html'
+    context_object_name = 'parq_form'

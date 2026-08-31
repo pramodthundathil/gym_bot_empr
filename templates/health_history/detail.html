@@ -1,0 +1,695 @@
+{% extends "index.html" %}
+{% load static %}
+{% static "images" as baseurl %}
+
+{% block content %}
+
+<div class="main-panel">
+  <div class="content-wrapper pb-0">
+    
+    <!-- Header Section -->
+    <div class="row">
+      <div class="col-12">
+        <div class="card">
+          <div class="card-header d-flex justify-content-between align-items-center">
+            <h3 class="card-title mb-0">
+              <i class="mdi mdi-account-heart me-2"></i>
+              Health History - {{ member.First_Name }} {{ member.Last_Name|default:"" }}
+            </h3>
+            <div>
+              <a href="{% url 'health_history_form' member.id %}" class="btn btn-outline-primary btn-sm me-2">
+                <i class="mdi mdi-pencil"></i> Edit
+              </a>
+              <a href="{% url 'MembersSingleView' member.id %}" class="btn btn-secondary btn-sm">
+                <i class="mdi mdi-arrow-left"></i> Back to Members
+              </a>
+            </div>
+          </div>
+          <div class="card-body">
+            <div class="row">
+              <div class="col-md-6">
+                <p class="text-muted mb-1"><strong>Member ID:</strong> {{ member.id }}</p>
+                <p class="text-muted mb-1"><strong>Email:</strong> {{ member.Email|default:"Not provided" }}</p>
+              </div>
+              <div class="col-md-6 text-md-end">
+                <p class="text-muted mb-1"><strong>Form Completed:</strong> {{ health_history.date_completed|date:"M d, Y g:i A" }}</p>
+                <p class="text-muted mb-0"><strong>Last Updated:</strong> {{ health_history.last_updated|date:"M d, Y g:i A" }}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Emergency Contact & Basic Info -->
+    <div class="row">
+      <div class="col-lg-6">
+        <div class="card">
+          <div class="card-header">
+            <h5 class="card-title mb-0">
+              <i class="mdi mdi-phone-alert text-danger me-2"></i>
+              Emergency Contact
+            </h5>
+          </div>
+          <div class="card-body">
+            <div class="row">
+              <div class="col-12 mb-3">
+                <strong>{{ health_history.emergency_contact_name }}</strong>
+                <span class="badge badge-outline-info ms-2">{{ health_history.emergency_contact_relationship }}</span>
+              </div>
+              <div class="col-12 mb-2">
+                <i class="mdi mdi-phone me-2 text-primary"></i>
+                {{ health_history.emergency_contact_phone }}
+              </div>
+              {% if health_history.emergency_contact_address %}
+              <div class="col-12">
+                <i class="mdi mdi-map-marker me-2 text-success"></i>
+                {{ health_history.emergency_contact_address }}
+              </div>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="col-lg-6">
+        <div class="card">
+          <div class="card-header">
+            <h5 class="card-title mb-0">
+              <i class="mdi mdi-human-male-height-variant text-info me-2"></i>
+              Physical Information
+            </h5>
+          </div>
+          <div class="card-body">
+            <div class="row">
+              <div class="col-6">
+                <div class="text-center">
+                  <h4 class="text-primary">{{ health_history.current_weight }} kg</h4>
+                  <p class="text-muted mb-0">Weight</p>
+                </div>
+              </div>
+              <div class="col-6">
+                <div class="text-center">
+                  <h4 class="text-success">{{ health_history.current_height }} cm</h4>
+                  <p class="text-muted mb-0">Height</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Fitness Goals & Availability -->
+    <div class="row">
+      <div class="col-lg-8">
+        <div class="card">
+          <div class="card-header">
+            <h5 class="card-title mb-0">
+              <i class="mdi mdi-target text-warning me-2"></i>
+              Fitness Goals & Training Availability
+            </h5>
+          </div>
+          <div class="card-body">
+            <div class="row">
+              <div class="col-md-6 mb-3">
+                <h6 class="text-primary">Primary Goal</h6>
+                <span class="badge badge-primary p-2">{{ health_history.get_fitness_goal_display }}</span>
+                {% if health_history.fitness_goal_details %}
+                <p class="mt-2 text-muted">{{ health_history.fitness_goal_details }}</p>
+                {% endif %}
+              </div>
+              <div class="col-md-6 mb-3">
+                <h6 class="text-success">PT Availability</h6>
+                <p class="mb-1">
+                  <i class="mdi mdi-clock-outline me-2"></i>
+                  {{ health_history.get_pt_availability_display }}
+                </p>
+                <p class="mb-0">
+                  <i class="mdi mdi-calendar me-2"></i>
+                  {{ health_history.preferred_days }}
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="col-lg-4">
+        <div class="card">
+          <div class="card-header">
+            <h5 class="card-title mb-0">
+              <i class="mdi mdi-doctor text-success me-2"></i>
+              Physician Info
+            </h5>
+          </div>
+          <div class="card-body">
+            {% if health_history.physician_name %}
+              <p class="mb-2"><strong>{{ health_history.physician_name }}</strong></p>
+              {% if health_history.physician_phone %}
+                <p class="text-muted mb-0">
+                  <i class="mdi mdi-phone me-2"></i>{{ health_history.physician_phone }}
+                </p>
+              {% endif %}
+            {% else %}
+              <p class="text-muted">No physician information provided</p>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Medical Care & Medications -->
+    <div class="row">
+      <div class="col-lg-6">
+        <div class="card">
+          <div class="card-header">
+            <h5 class="card-title mb-0">
+              <i class="mdi mdi-medical-bag text-danger me-2"></i>
+              Current Medical Care
+            </h5>
+          </div>
+          <div class="card-body">
+            <div class="mb-3">
+              <span class="badge {{ health_history.under_medical_care|yesno:'badge-danger,badge-success' }} me-2">
+                {{ health_history.under_medical_care|yesno:"Yes,No" }}
+              </span>
+              Under Medical Care
+            </div>
+            {% if health_history.under_medical_care and health_history.medical_care_reason %}
+            <div class="alert alert-info">
+              <strong>Reason:</strong> {{ health_history.medical_care_reason }}
+            </div>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+      
+      <div class="col-lg-6">
+        <div class="card">
+          <div class="card-header d-flex justify-content-between align-items-center">
+            <h5 class="card-title mb-0">
+              <i class="mdi mdi-pill text-primary me-2"></i>
+              Medications
+            </h5>
+            <span class="badge {{ health_history.taking_medications|yesno:'badge-warning,badge-success' }}">
+              {{ health_history.taking_medications|yesno:"Taking Medications,No Medications" }}
+            </span>
+          </div>
+          <div class="card-body">
+            {% if medications %}
+              <div class="table-responsive">
+                <table class="table table-sm">
+                  <thead>
+                    <tr>
+                      <th>Medication</th>
+                      <th>Dosage</th>
+                      <th>Reason</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {% for medication in medications %}
+                    <tr>
+                      <td><strong>{{ medication.medication_type }}</strong></td>
+                      <td>{{ medication.dosage_frequency }}</td>
+                      <td class="text-muted">{{ medication.reason_for_taking }}</td>
+                    </tr>
+                    {% endfor %}
+                  </tbody>
+                </table>
+              </div>
+            {% else %}
+              <p class="text-muted">No medications recorded</p>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Health Conditions Risky for Gym Workouts -->
+{% if health_history.has_risky_heart_conditions or health_history.has_risky_health_conditions %}
+<div class="row">
+  <div class="col-12">
+    <div class="card border-warning">
+      <div class="card-header bg-warning text-dark">
+        <h5 class="card-title mb-0">
+          <i class="mdi mdi-alert-octagon text-danger me-2"></i>
+          ⚠️ Health Conditions Risky for Gym Workouts
+        </h5>
+        <small class="text-dark">These conditions require special attention and monitoring during exercise</small>
+      </div>
+      <div class="card-body">
+        <div class="row">
+          <!-- Heart/Cardiovascular Conditions -->
+          {% if health_history.has_risky_heart_conditions %}
+          <div class="col-lg-6 mb-3">
+            <div class="alert alert-danger border-left-danger">
+              <div class="d-flex align-items-start">
+                <i class="mdi mdi-heart-pulse text-danger me-3" style="font-size: 1.5rem; margin-top: 2px;"></i>
+                <div>
+                  <h6 class="alert-heading text-danger mb-2">
+                    <strong>Heart/Cardiovascular Risk Conditions</strong>
+                  </h6>
+                  <span class="badge badge-danger mb-2">REQUIRES MEDICAL CLEARANCE</span>
+                  {% if health_history.risky_heart_conditions_details %}
+                  <p class="mb-0">{{ health_history.risky_heart_conditions_details }}</p>
+                  {% endif %}
+                </div>
+              </div>
+            </div>
+          </div>
+          {% endif %}
+          
+          <!-- Other High-Risk Health Conditions -->
+          {% if health_history.has_risky_health_conditions %}
+          <div class="col-lg-6 mb-3">
+            <div class="alert alert-warning border-left-warning">
+              <div class="d-flex align-items-start">
+                <i class="mdi mdi-medical-bag text-warning me-3" style="font-size: 1.5rem; margin-top: 2px;"></i>
+                <div>
+                  <h6 class="alert-heading text-warning mb-2">
+                    <strong>Other High-Risk Health Conditions</strong>
+                  </h6>
+                  <span class="badge badge-warning mb-2">REQUIRES SPECIAL ATTENTION</span>
+                  {% if health_history.risky_health_conditions_details %}
+                  <p class="mb-0">{{ health_history.risky_health_conditions_details }}</p>
+                  {% endif %}
+                </div>
+              </div>
+            </div>
+          </div>
+          {% endif %}
+        </div>
+        
+        <!-- Safety Recommendations -->
+        <div class="row mt-3">
+          <div class="col-12">
+            <div class="alert alert-info border-left-info">
+              <h6 class="text-info mb-2">
+                <i class="mdi mdi-information me-2"></i>
+                Safety Recommendations
+              </h6>
+              <ul class="mb-0 text-muted">
+                {% if health_history.has_risky_heart_conditions %}
+                <li><strong>Medical Clearance Required:</strong> Consult physician before starting any exercise program</li>
+                <li><strong>Supervised Training:</strong> Initial sessions should be closely monitored by qualified trainers</li>
+                <li><strong>Emergency Preparedness:</strong> Staff should be aware of cardiac risk factors</li>
+                {% endif %}
+                {% if health_history.has_risky_health_conditions %}
+                <li><strong>Modified Exercise Plan:</strong> Workout intensity and types may need adjustment</li>
+                <li><strong>Regular Monitoring:</strong> Frequent check-ins during exercise sessions</li>
+                {% endif %}
+                <li><strong>Emergency Contact:</strong> Keep emergency contact readily available during all sessions</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endif %}
+
+    <!-- Health Conditions & Risk Factors -->
+    <div class="row">
+      <div class="col-12">
+        <div class="card">
+          <div class="card-header">
+            <h5 class="card-title mb-0">
+              <i class="mdi mdi-heart-pulse text-danger me-2"></i>
+              Health Conditions & Risk Factors
+            </h5>
+          </div>
+          <div class="card-body">
+            <div class="row">
+              <!-- Basic Health Indicators -->
+              <div class="col-lg-3 col-md-6 mb-3">
+                <h6 class="text-primary">Basic Health</h6>
+                <div class="health-indicator">
+                  <span class="badge {{ health_history.high_blood_pressure|yesno:'badge-danger,badge-success' }} me-2">
+                    {{ health_history.high_blood_pressure|yesno:"Yes,No" }}
+                  </span> High BP
+                </div>
+                <div class="health-indicator">
+                  <span class="badge {{ health_history.bone_joint_problems|yesno:'badge-warning,badge-success' }} me-2">
+                    {{ health_history.bone_joint_problems|yesno:"Yes,No" }}
+                  </span> Bone/Joint Issues
+                </div>
+                <div class="health-indicator">
+                  <span class="badge {{ health_history.over_65|yesno:'badge-info,badge-secondary' }} me-2">
+                    {{ health_history.over_65|yesno:"Yes,No" }}
+                  </span> Over 65
+                </div>
+              </div>
+
+              <!-- Family History -->
+              <div class="col-lg-3 col-md-6 mb-3">
+                <h6 class="text-warning">Family History</h6>
+                <div class="health-indicator">
+                  <span class="badge {{ health_history.family_asthma|yesno:'badge-warning,badge-success' }} me-2">
+                    {{ health_history.family_asthma|yesno:"Yes,No" }}
+                  </span> Asthma
+                </div>
+                <div class="health-indicator">
+                  <span class="badge {{ health_history.family_diabetes|yesno:'badge-warning,badge-success' }} me-2">
+                    {{ health_history.family_diabetes|yesno:"Yes,No" }}
+                  </span> Diabetes
+                </div>
+                <div class="health-indicator">
+                  <span class="badge {{ health_history.family_epilepsy|yesno:'badge-warning,badge-success' }} me-2">
+                    {{ health_history.family_epilepsy|yesno:"Yes,No" }}
+                  </span> Epilepsy
+                </div>
+                <div class="health-indicator">
+                  <span class="badge {{ health_history.family_osteoporosis|yesno:'badge-warning,badge-success' }} me-2">
+                    {{ health_history.family_osteoporosis|yesno:"Yes,No" }}
+                  </span> Osteoporosis
+                </div>
+              </div>
+
+              <!-- Lifestyle -->
+              <div class="col-lg-3 col-md-6 mb-3">
+                <h6 class="text-info">Lifestyle</h6>
+                {% if health_history.occupational_stress %}
+                <div class="health-indicator">
+                  <span class="badge badge-info me-2">{{ health_history.get_occupational_stress_display }}</span> Work Stress
+                </div>
+                {% endif %}
+                {% if health_history.energy_level %}
+                <div class="health-indicator">
+                  <span class="badge badge-success me-2">{{ health_history.get_energy_level_display }}</span> Energy
+                </div>
+                {% endif %}
+                {% if health_history.smoking_status %}
+                <div class="health-indicator">
+                  <span class="badge badge-danger me-2">{{ health_history.get_smoking_status_display }}</span>
+                </div>
+                {% endif %}
+              </div>
+
+              <!-- Exercise -->
+              <div class="col-lg-3 col-md-6 mb-3">
+                <h6 class="text-success">Exercise</h6>
+                <div class="health-indicator">
+                  <span class="badge {{ health_history.exercise_restrictions|yesno:'badge-danger,badge-success' }} me-2">
+                    {{ health_history.exercise_restrictions|yesno:"Restricted,No Restrictions" }}
+                  </span>
+                </div>
+                <div class="health-indicator">
+                  <span class="badge {{ health_history.chest_pain_exercise|yesno:'badge-danger,badge-success' }} me-2">
+                    {{ health_history.chest_pain_exercise|yesno:"Chest Pain,No Pain" }}
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Detailed Medical Conditions -->
+    {% if health_history.personal_asthma or health_history.personal_diabetes_type1 or health_history.personal_diabetes_type2 or health_history.high_cholesterol or health_history.heart_disease %}
+    <div class="row">
+      <div class="col-12">
+        <div class="card">
+          <div class="card-header">
+            <h5 class="card-title mb-0">
+              <i class="mdi mdi-clipboard-text text-primary me-2"></i>
+              Detailed Medical Conditions
+            </h5>
+          </div>
+          <div class="card-body">
+            <div class="row">
+              {% if health_history.personal_asthma %}
+              <div class="col-lg-6 mb-3">
+                <div class="alert alert-warning">
+                  <strong>Asthma:</strong> {{ health_history.personal_asthma }}
+                </div>
+              </div>
+              {% endif %}
+              
+              {% if health_history.personal_diabetes_type1 or health_history.personal_diabetes_type2 %}
+              <div class="col-lg-6 mb-3">
+                <div class="alert alert-info">
+                  <strong>Diabetes:</strong>
+                  {% if health_history.personal_diabetes_type1 %}Type 1 - {{ health_history.personal_diabetes_type1 }}{% endif %}
+                  {% if health_history.personal_diabetes_type2 %}Type 2 - {{ health_history.personal_diabetes_type2 }}{% endif %}
+                  {% if health_history.diabetes_duration %}<br><small>Duration: {{ health_history.diabetes_duration }}</small>{% endif %}
+                </div>
+              </div>
+              {% endif %}
+              
+              {% if health_history.high_cholesterol %}
+              <div class="col-lg-6 mb-3">
+                <div class="alert alert-danger">
+                  <strong>High Cholesterol:</strong> {{ health_history.high_cholesterol }}
+                </div>
+              </div>
+              {% endif %}
+              
+              {% if health_history.heart_disease %}
+              <div class="col-lg-6 mb-3">
+                <div class="alert alert-danger">
+                  <strong>Heart Disease:</strong> {{ health_history.heart_disease }}
+                </div>
+              </div>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    {% endif %}
+
+    <!-- Musculoskeletal Issues -->
+    {% if health_history.head_neck_issues or health_history.upper_back_issues or health_history.lower_back_issues or health_history.hip_pelvis_issues or health_history.arthritis_details %}
+    <div class="row">
+      <div class="col-12">
+        <div class="card">
+          <div class="card-header">
+            <h5 class="card-title mb-0">
+              <i class="mdi mdi-human text-warning me-2"></i>
+              Musculoskeletal Issues
+            </h5>
+          </div>
+          <div class="card-body">
+            <div class="row">
+              {% if health_history.head_neck_issues %}
+              <div class="col-lg-4 mb-3">
+                <h6 class="text-primary">Head/Neck</h6>
+                <p class="text-muted">{{ health_history.head_neck_issues }}</p>
+              </div>
+              {% endif %}
+              
+              {% if health_history.upper_back_issues %}
+              <div class="col-lg-4 mb-3">
+                <h6 class="text-primary">Upper Back</h6>
+                <p class="text-muted">{{ health_history.upper_back_issues }}</p>
+              </div>
+              {% endif %}
+              
+              {% if health_history.lower_back_issues %}
+              <div class="col-lg-4 mb-3">
+                <h6 class="text-primary">Lower Back</h6>
+                <p class="text-muted">{{ health_history.lower_back_issues }}</p>
+              </div>
+              {% endif %}
+              
+              {% if health_history.hip_pelvis_issues %}
+              <div class="col-lg-4 mb-3">
+                <h6 class="text-primary">Hip/Pelvis</h6>
+                <p class="text-muted">{{ health_history.hip_pelvis_issues }}</p>
+              </div>
+              {% endif %}
+              
+              {% if health_history.arthritis_details %}
+              <div class="col-lg-4 mb-3">
+                <h6 class="text-primary">Arthritis</h6>
+                <p class="text-muted">{{ health_history.arthritis_details }}</p>
+              </div>
+              {% endif %}
+              
+              {% if health_history.surgeries_details %}
+              <div class="col-lg-4 mb-3">
+                <h6 class="text-danger">Previous Surgeries</h6>
+                <p class="text-muted">{{ health_history.surgeries_details }}</p>
+              </div>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    {% endif %}
+
+    <!-- Nutrition & Lifestyle -->
+    <div class="row">
+      <div class="col-lg-6">
+        <div class="card">
+          <div class="card-header">
+            <h5 class="card-title mb-0">
+              <i class="mdi mdi-food-apple text-success me-2"></i>
+              Nutrition & Diet
+            </h5>
+          </div>
+          <div class="card-body">
+            <div class="row">
+              <div class="col-12 mb-3">
+                <span class="badge {{ health_history.on_diet_plan|yesno:'badge-info,badge-secondary' }} me-2">
+                  {{ health_history.on_diet_plan|yesno:"On Diet Plan,No Diet Plan" }}
+                </span>
+                {% if health_history.diet_plan_details %}
+                <p class="mt-2 text-muted">{{ health_history.diet_plan_details }}</p>
+                {% endif %}
+              </div>
+              
+              <div class="col-12 mb-3">
+                <span class="badge {{ health_history.taking_supplements|yesno:'badge-warning,badge-secondary' }} me-2">
+                  {{ health_history.taking_supplements|yesno:"Taking Supplements,No Supplements" }}
+                </span>
+                {% if health_history.supplements_list %}
+                <p class="mt-2 text-muted">{{ health_history.supplements_list }}</p>
+                {% endif %}
+              </div>
+              
+              {% if health_history.caffeine_daily or health_history.alcohol_weekly %}
+              <div class="col-12">
+                <h6 class="text-primary">Daily Intake</h6>
+                {% if health_history.caffeine_daily %}
+                <p class="mb-1">☕ Caffeine: {{ health_history.caffeine_daily }} cups/day</p>
+                {% endif %}
+                {% if health_history.alcohol_weekly %}
+                <p class="mb-1">🍷 Alcohol: {{ health_history.alcohol_weekly }} drinks/week</p>
+                {% endif %}
+              </div>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="col-lg-6">
+        <div class="card">
+          <div class="card-header">
+            <h5 class="card-title mb-0">
+              <i class="mdi mdi-briefcase text-info me-2"></i>
+              Work & Activity Level
+            </h5>
+          </div>
+          <div class="card-body">
+            {% if health_history.work_exercise_habits %}
+            <div class="mb-3">
+              <h6 class="text-primary">Activity Level</h6>
+              <span class="badge badge-info">{{ health_history.get_work_exercise_habits_display }}</span>
+            </div>
+            {% endif %}
+            
+            <div class="row">
+              {% if health_history.work_stress_level %}
+              <div class="col-6 mb-2">
+                <strong>Work Stress:</strong>
+                <span class="badge badge-{{ health_history.work_stress_level|yesno:'danger,warning,success' }}">
+                  {{ health_history.get_work_stress_level_display }}
+                </span>
+              </div>
+              {% endif %}
+              
+              {% if health_history.home_stress_level %}
+              <div class="col-6 mb-2">
+                <strong>Home Stress:</strong>
+                <span class="badge badge-{{ health_history.home_stress_level|yesno:'danger,warning,success' }}">
+                  {{ health_history.get_home_stress_level_display }}
+                </span>
+              </div>
+              {% endif %}
+            </div>
+            
+            {% if health_history.works_over_40_hours %}
+            <div class="alert alert-warning">
+              <i class="mdi mdi-clock-alert me-2"></i>
+              Works over 40 hours per week
+            </div>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Allergies & Additional Comments -->
+    <div class="row">
+      {% if health_history.allergies %}
+      <div class="col-lg-6">
+        <div class="card">
+          <div class="card-header">
+            <h5 class="card-title mb-0">
+              <i class="mdi mdi-alert text-danger me-2"></i>
+              Allergies
+            </h5>
+          </div>
+          <div class="card-body">
+            <div class="alert alert-danger">
+              {{ health_history.allergies }}
+            </div>
+          </div>
+        </div>
+      </div>
+      {% endif %}
+      
+      {% if health_history.additional_comments %}
+      <div class="col-lg-{% if health_history.allergies %}6{% else %}12{% endif %}">
+        <div class="card">
+          <div class="card-header">
+            <h5 class="card-title mb-0">
+              <i class="mdi mdi-comment-text text-info me-2"></i>
+              Additional Comments
+            </h5>
+          </div>
+          <div class="card-body">
+            <p class="text-muted mb-0">{{ health_history.additional_comments }}</p>
+          </div>
+        </div>
+      </div>
+      {% endif %}
+    </div>
+
+  </div>
+</div>
+
+<style>
+.health-indicator {
+  margin-bottom: 0.5rem;
+  font-size: 0.9rem;
+}
+
+.badge {
+  font-size: 0.75rem;
+}
+
+.card-header {
+  background-color: #f8f9fa;
+  border-bottom: 1px solid #dee2e6;
+}
+
+.alert {
+  border-radius: 0.375rem;
+  font-size: 0.9rem;
+}
+
+.table-sm th,
+.table-sm td {
+  padding: 0.5rem;
+  font-size: 0.9rem;
+}
+
+@media (max-width: 768px) {
+  .card-header h5 {
+    font-size: 1rem;
+  }
+  
+  .health-indicator {
+    font-size: 0.8rem;
+  }
+}
+</style>
+
+{% endblock %}

@@ -1,0 +1,664 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Walk-In Registration - Empire Fitness</title>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- MDI Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/@mdi/font@7.2.96/css/materialdesignicons.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary-gradient: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+            --dark-bg: #0f172a;
+            --card-bg: rgba(30, 41, 59, 0.7);
+            --card-border: rgba(255, 255, 255, 0.08);
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --warning-gold: #fbbf24;
+        }
+
+        body {
+            font-family: 'Outfit', sans-serif;
+            background-color: var(--dark-bg);
+            color: var(--text-main);
+            min-height: 100vh;
+            background-image: radial-gradient(circle at 10% 20%, rgba(245, 158, 11, 0.08) 0%, transparent 40%),
+                              radial-gradient(circle at 90% 80%, rgba(217, 119, 6, 0.08) 0%, transparent 40%);
+            background-attachment: fixed;
+            padding: 40px 20px;
+        }
+
+        .registration-container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .header-logo {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .header-logo h1 {
+            font-weight: 700;
+            font-size: 2.2rem;
+            letter-spacing: -0.5px;
+            background: var(--primary-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 5px;
+        }
+
+        .header-logo p {
+            color: var(--text-muted);
+            font-size: 1.1rem;
+        }
+
+        .form-card {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            backdrop-filter: blur(16px);
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+            margin-bottom: 30px;
+        }
+
+        .form-section-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--warning-gold);
+            margin-bottom: 25px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            padding-bottom: 10px;
+        }
+
+        .form-label {
+            font-weight: 500;
+            font-size: 0.95rem;
+            color: var(--text-main);
+        }
+
+        .form-control, .form-select {
+            background-color: rgba(15, 23, 42, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.25);
+            color: #ffffff;
+            border-radius: 8px;
+            padding: 11px 15px;
+            font-size: 0.95rem;
+            transition: all 0.3s ease;
+        }
+
+        .form-control::placeholder {
+            color: #94a3b8 !important; /* High contrast placeholder text */
+            opacity: 0.9 !important;
+        }
+
+        .form-select option {
+            background-color: #0f172a;
+            color: #ffffff;
+        }
+
+        .form-control:focus, .form-select:focus {
+            background-color: rgba(15, 23, 42, 0.9);
+            border-color: var(--warning-gold);
+            box-shadow: 0 0 0 3px rgba(251, 191, 36, 0.15);
+            color: #ffffff;
+        }
+
+        .form-check-input {
+            background-color: rgba(15, 23, 42, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            cursor: pointer;
+        }
+
+        .form-check-input:checked {
+            background-color: #d97706;
+            border-color: #d97706;
+        }
+
+        .btn-gold {
+            background: var(--primary-gradient);
+            border: none;
+            color: #000;
+            font-weight: 600;
+            padding: 12px 30px;
+            border-radius: 10px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 12px rgba(245, 158, 11, 0.2);
+        }
+
+        .btn-gold:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 18px rgba(245, 158, 11, 0.3);
+            color: #000;
+        }
+
+        .med-row {
+            background-color: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 10px;
+            position: relative;
+        }
+
+        .btn-add-med {
+            border: 1px dashed var(--warning-gold);
+            color: var(--warning-gold);
+            background: transparent;
+            width: 100%;
+            padding: 10px;
+            border-radius: 8px;
+            font-weight: 500;
+            transition: all 0.2s ease;
+        }
+
+        .btn-add-med:hover {
+            background: rgba(251, 191, 36, 0.05);
+            color: var(--warning-gold);
+        }
+
+        .remove-med-btn {
+            color: #ef4444;
+            cursor: pointer;
+            font-size: 1.2rem;
+            transition: color 0.2s ease;
+        }
+
+        .remove-med-btn:hover {
+            color: #f87171;
+        }
+
+        .info-card {
+            border-left: 4px solid var(--warning-gold);
+            background: rgba(251, 191, 36, 0.04);
+            padding: 15px;
+            border-radius: 0 10px 10px 0;
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            margin-bottom: 25px;
+        }
+    </style>
+</head>
+<body>
+    <div class="registration-container">
+        <div class="header-logo">
+            <h1>EMPIRE FITNESS</h1>
+            <p>Walk-In Member Self-Registration</p>
+        </div>
+
+        <form action="" method="POST" id="enrolmentForm">
+            {% csrf_token %}
+            
+            <!-- Section 1: Basic Info -->
+            <div class="form-card">
+                <div class="form-section-title">
+                    <i class="mdi mdi-account-outline"></i> Personal Information
+                </div>
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label class="form-label">Full Name *</label>
+                        <input type="text" name="name" required class="form-control" placeholder="e.g. John Doe">
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Phone Number *</label>
+                        <input type="tel" name="phone_number" required minlength="10" class="form-control" placeholder="e.g. 9876543210">
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Email Address</label>
+                        <input type="email" name="email" class="form-control" placeholder="e.g. john@example.com">
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Age</label>
+                        <input type="number" name="age" class="form-control" placeholder="e.g. 28">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Section 2: Emergency Contact -->
+            <div class="form-card">
+                <div class="form-section-title">
+                    <i class="mdi mdi-phone-alert-outline"></i> Emergency Contact Details
+                </div>
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label class="form-label">Emergency Contact Name *</label>
+                        <input type="text" name="emergency_contact_name" required class="form-control" placeholder="e.g. Mary Doe">
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Relationship *</label>
+                        <input type="text" name="emergency_contact_relationship" required class="form-control" placeholder="e.g. Spouse / Parent">
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Emergency Phone *</label>
+                        <input type="text" name="emergency_contact_phone" required class="form-control" placeholder="e.g. 9876543211">
+                    </div>
+                    <div class="col-12">
+                        <label class="form-label">Address</label>
+                        <textarea name="emergency_contact_address" rows="2" class="form-control" placeholder="Emergency contact address details..."></textarea>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Section 3: Physical Info & Goals -->
+            <div class="form-card">
+                <div class="form-section-title">
+                    <i class="mdi mdi-trophy-outline"></i> Fitness & Training Goals
+                </div>
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label class="form-label">Current Weight (kg) *</label>
+                        <input type="number" step="0.1" name="current_weight" required class="form-control" placeholder="e.g. 72.5">
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Current Height (cm) *</label>
+                        <input type="number" step="0.1" name="current_height" required class="form-control" placeholder="e.g. 175">
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Fitness Goal *</label>
+                        <select name="fitness_goal" class="form-select">
+                            <option value="Loss Weight">Weight Loss</option>
+                            <option value="Gain Weight">Weight Gain</option>
+                            <option value="Bulking">Bulking / Muscle Gain</option>
+                            <option value="Cutting">Cutting / Shredding</option>
+                            <option value="Maintenance">Maintenance</option>
+                            <option value="Cardio Fitness">Cardiovascular Fitness</option>
+                        </select>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Personal Trainer Availability *</label>
+                        <select name="pt_availability" class="form-select">
+                            <option value="Morning">Morning</option>
+                            <option value="Afternoon">Afternoon</option>
+                            <option value="Evening">Evening</option>
+                            <option value="Flexible">Flexible</option>
+                        </select>
+                    </div>
+                    <div class="col-12">
+                        <label class="form-label">Goal Details / Specific Requirements</label>
+                        <textarea name="fitness_goal_details" rows="2" class="form-control" placeholder="Describe what you want to achieve..."></textarea>
+                    </div>
+                    <div class="col-12">
+                        <label class="form-label d-block mb-2">Preferred Training Days</label>
+                        <div class="d-flex flex-wrap gap-3">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="preferred_days" value="Monday" id="dayMon" checked>
+                                <label class="form-check-label" for="dayMon">Monday</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="preferred_days" value="Tuesday" id="dayTue" checked>
+                                <label class="form-check-label" for="dayTue">Tuesday</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="preferred_days" value="Wednesday" id="dayWed" checked>
+                                <label class="form-check-label" for="dayWed">Wednesday</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="preferred_days" value="Thursday" id="dayThu" checked>
+                                <label class="form-check-label" for="dayThu">Thursday</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="preferred_days" value="Friday" id="dayFri" checked>
+                                <label class="form-check-label" for="dayFri">Friday</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="preferred_days" value="Saturday" id="daySat">
+                                <label class="form-check-label" for="daySat">Saturday</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="preferred_days" value="Sunday" id="daySun">
+                                <label class="form-check-label" for="daySun">Sunday</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Section 4: Health Conditions -->
+            <div class="form-card">
+                <div class="form-section-title">
+                    <i class="mdi mdi-heart-pulse"></i> Health & Medical History Questionnaire
+                </div>
+                <div class="info-card">
+                    Please answer the following questions accurately to help us ensure your training is safe and matches your physical condition.
+                </div>
+                
+                <div class="row g-3">
+                    <div class="col-12">
+                        <div class="form-check mb-2">
+                            <input class="form-check-input" type="checkbox" name="high_blood_pressure" value="true" id="hbCheck">
+                            <label class="form-check-label" for="hbCheck">
+                                Do you have high blood pressure, heart disease, or chest pains?
+                            </label>
+                        </div>
+                        <div class="form-check mb-2">
+                            <input class="form-check-input" type="checkbox" name="bone_joint_problems" value="true" id="bjCheck">
+                            <label class="form-check-label" for="bjCheck">
+                                Do you suffer from bone, joint, or spinal problems?
+                            </label>
+                        </div>
+                        <div class="form-check mb-2">
+                            <input class="form-check-input" type="checkbox" name="over_65" value="true" id="ageCheck">
+                            <label class="form-check-label" for="ageCheck">
+                                Are you over 65 years of age and not accustomed to vigorous exercise?
+                            </label>
+                        </div>
+                        <div class="form-check mb-2">
+                            <input class="form-check-input" type="checkbox" name="unaccustomed_exercise" value="true" id="unCheck">
+                            <label class="form-check-label" for="unCheck">
+                                Is there any other physical reason why you should not follow an exercise program?
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="col-12 border-top border-secondary pt-3 mt-3">
+                        <div class="form-check mb-2">
+                            <input class="form-check-input" type="checkbox" name="under_medical_care" value="true" id="medCareCheck">
+                            <label class="form-check-label" for="medCareCheck">
+                                Are you currently under medical care or receiving therapy?
+                            </label>
+                        </div>
+                        <div class="mb-3" id="medCareDetails" style="display:none;">
+                            <label class="form-label">Reason for medical care/therapy</label>
+                            <textarea name="medical_care_reason" rows="2" class="form-control" placeholder="Describe briefly..."></textarea>
+                        </div>
+                    </div>
+
+                    <div class="col-12 border-top border-secondary pt-3 mt-3">
+                        <div class="form-check mb-2">
+                            <input class="form-check-input" type="checkbox" name="has_risky_heart_conditions" value="true" id="heartRiskCheck">
+                            <label class="form-check-label text-warning" for="heartRiskCheck">
+                                Have you ever been diagnosed with any risky heart conditions?
+                            </label>
+                        </div>
+                        <div class="mb-3" id="heartRiskDetails" style="display:none;">
+                            <label class="form-label">Heart condition details</label>
+                            <textarea name="risky_heart_conditions_details" rows="2" class="form-control" placeholder="Provide heart condition specifics..."></textarea>
+                        </div>
+                    </div>
+
+                    <div class="col-12 border-top border-secondary pt-3 mt-3">
+                        <div class="form-check mb-2">
+                            <input class="form-check-input" type="checkbox" name="has_risky_health_conditions" value="true" id="healthRiskCheck">
+                            <label class="form-check-label text-warning" for="healthRiskCheck">
+                                Do you have any other high-risk medical health conditions?
+                            </label>
+                        </div>
+                        <div class="mb-3" id="healthRiskDetails" style="display:none;">
+                            <label class="form-label">Health condition details</label>
+                            <textarea name="risky_health_conditions_details" rows="2" class="form-control" placeholder="Provide other medical details..."></textarea>
+                        </div>
+                    </div>
+
+                    <div class="col-12 border-top border-secondary pt-3 mt-3">
+                        <label class="form-label">Allergies (if any)</label>
+                        <input type="text" name="allergies" class="form-control" placeholder="e.g. Penicillin, Peanuts, Latex">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Section 4.5: PAR-Q Questionnaire -->
+            <div class="form-card">
+                <div class="form-section-title">
+                    <i class="mdi mdi-sticker-check-outline"></i> Physical Activity Readiness Questionnaire (PAR-Q)
+                </div>
+                <div class="info-card">
+                    Please answer YES or NO to the following standard fitness readiness questions.
+                </div>
+                
+                <div class="parq-questions">
+                    <!-- Question 1 -->
+                    <div class="row align-items-center mb-3 py-2 border-bottom border-secondary">
+                        <div class="col-md-9 col-sm-12">
+                            <span class="form-label">1. Has your doctor ever said that you have a heart condition and that you should only do physical activity recommended by a doctor?</span>
+                        </div>
+                        <div class="col-md-3 col-sm-12 text-md-end mt-2 mt-md-0">
+                            <div class="btn-group" role="group">
+                                <input type="radio" class="btn-check" name="heart_condition" id="heartYes" value="true">
+                                <label class="btn btn-outline-danger btn-sm px-3" for="heartYes">YES</label>
+                                
+                                <input type="radio" class="btn-check" name="heart_condition" id="heartNo" value="false" checked>
+                                <label class="btn btn-outline-secondary btn-sm px-3" for="heartNo">NO</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Question 2 -->
+                    <div class="row align-items-center mb-3 py-2 border-bottom border-secondary">
+                        <div class="col-md-9 col-sm-12">
+                            <span class="form-label">2. Do you feel pain in your chest when you do physical activity?</span>
+                        </div>
+                        <div class="col-md-3 col-sm-12 text-md-end mt-2 mt-md-0">
+                            <div class="btn-group" role="group">
+                                <input type="radio" class="btn-check" name="chest_pain_activity" id="painActYes" value="true">
+                                <label class="btn btn-outline-danger btn-sm px-3" for="painActYes">YES</label>
+                                
+                                <input type="radio" class="btn-check" name="chest_pain_activity" id="painActNo" value="false" checked>
+                                <label class="btn btn-outline-secondary btn-sm px-3" for="painActNo">NO</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Question 3 -->
+                    <div class="row align-items-center mb-3 py-2 border-bottom border-secondary">
+                        <div class="col-md-9 col-sm-12">
+                            <span class="form-label">3. In the past month, have you had chest pain when you were not doing physical activity?</span>
+                        </div>
+                        <div class="col-md-3 col-sm-12 text-md-end mt-2 mt-md-0">
+                            <div class="btn-group" role="group">
+                                <input type="radio" class="btn-check" name="chest_pain_last_month" id="painMonthYes" value="true">
+                                <label class="btn btn-outline-danger btn-sm px-3" for="painMonthYes">YES</label>
+                                
+                                <input type="radio" class="btn-check" name="chest_pain_last_month" id="painMonthNo" value="false" checked>
+                                <label class="btn btn-outline-secondary btn-sm px-3" for="painMonthNo">NO</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Question 4 -->
+                    <div class="row align-items-center mb-3 py-2 border-bottom border-secondary">
+                        <div class="col-md-9 col-sm-12">
+                            <span class="form-label">4. Do you lose your balance because of dizziness or do you ever lose consciousness?</span>
+                        </div>
+                        <div class="col-md-3 col-sm-12 text-md-end mt-2 mt-md-0">
+                            <div class="btn-group" role="group">
+                                <input type="radio" class="btn-check" name="lose_consciousness" id="dizYes" value="true">
+                                <label class="btn btn-outline-danger btn-sm px-3" for="dizYes">YES</label>
+                                
+                                <input type="radio" class="btn-check" name="lose_consciousness" id="dizNo" value="false" checked>
+                                <label class="btn btn-outline-secondary btn-sm px-3" for="dizNo">NO</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Question 5 -->
+                    <div class="row align-items-center mb-3 py-2 border-bottom border-secondary">
+                        <div class="col-md-9 col-sm-12">
+                            <span class="form-label">5. Do you have a bone or joint problem (for example, back, knee, or hip) that could be made worse by a change in your physical activity?</span>
+                        </div>
+                        <div class="col-md-3 col-sm-12 text-md-end mt-2 mt-md-0">
+                            <div class="btn-group" role="group">
+                                <input type="radio" class="btn-check" name="bone_joint_problem" id="bjProbYes" value="true">
+                                <label class="btn btn-outline-danger btn-sm px-3" for="bjProbYes">YES</label>
+                                
+                                <input type="radio" class="btn-check" name="bone_joint_problem" id="bjProbNo" value="false" checked>
+                                <label class="btn btn-outline-secondary btn-sm px-3" for="bjProbNo">NO</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Question 6 -->
+                    <div class="row align-items-center mb-3 py-2 border-bottom border-secondary">
+                        <div class="col-md-9 col-sm-12">
+                            <span class="form-label">6. Do you suffer from asthma, diabetes, high blood pressure, epilepsy or a heart condition?</span>
+                        </div>
+                        <div class="col-md-3 col-sm-12 text-md-end mt-2 mt-md-0">
+                            <div class="btn-group" role="group">
+                                <input type="radio" class="btn-check" name="medical_conditions" id="medCondYes" value="true">
+                                <label class="btn btn-outline-danger btn-sm px-3" for="medCondYes">YES</label>
+                                
+                                <input type="radio" class="btn-check" name="medical_conditions" id="medCondNo" value="false" checked>
+                                <label class="btn btn-outline-secondary btn-sm px-3" for="medCondNo">NO</label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mb-3 mt-2" id="medCondDetails" style="display:none;">
+                        <label class="form-label">Please specify medical conditions:</label>
+                        <textarea name="medical_conditions_specify" rows="2" class="form-control" placeholder="Specify conditions..."></textarea>
+                    </div>
+
+                    <!-- Question 7 -->
+                    <div class="row align-items-center mb-3 py-2 border-bottom border-secondary">
+                        <div class="col-md-9 col-sm-12">
+                            <span class="form-label">7. Do you have any current conditions or injuries being treated by a doctor?</span>
+                        </div>
+                        <div class="col-md-3 col-sm-12 text-md-end mt-2 mt-md-0">
+                            <div class="btn-group" role="group">
+                                <input type="radio" class="btn-check" name="current_treatment" id="treatYes" value="true">
+                                <label class="btn btn-outline-danger btn-sm px-3" for="treatYes">YES</label>
+                                
+                                <input type="radio" class="btn-check" name="current_treatment" id="treatNo" value="false" checked>
+                                <label class="btn btn-outline-secondary btn-sm px-3" for="treatNo">NO</label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mb-3 mt-2" id="treatDetails" style="display:none;">
+                        <label class="form-label">Please specify current treatment:</label>
+                        <textarea name="current_treatment_specify" rows="2" class="form-control" placeholder="Specify treatments..."></textarea>
+                    </div>
+
+                    <!-- Question 8 -->
+                    <div class="row align-items-center mb-3 py-2 border-bottom border-secondary">
+                        <div class="col-md-9 col-sm-12">
+                            <span class="form-label">8. Do you know of any other reason why you should not take part in physical activity/exercise?</span>
+                        </div>
+                        <div class="col-md-3 col-sm-12 text-md-end mt-2 mt-md-0">
+                            <div class="btn-group" role="group">
+                                <input type="radio" class="btn-check" name="other_reason" id="othYes" value="true">
+                                <label class="btn btn-outline-danger btn-sm px-3" for="othYes">YES</label>
+                                
+                                <input type="radio" class="btn-check" name="other_reason" id="othNo" value="false" checked>
+                                <label class="btn btn-outline-secondary btn-sm px-3" for="othNo">NO</label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mb-3 mt-2" id="othDetails" style="display:none;">
+                        <label class="form-label">Please specify other reasons:</label>
+                        <textarea name="other_reason_specify" rows="2" class="form-control" placeholder="Specify other reasons..."></textarea>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Section 5: Medications -->
+            <div class="form-card">
+                <div class="form-section-title">
+                    <i class="mdi mdi-pill"></i> Medications List
+                </div>
+                <div class="form-check mb-3">
+                    <input class="form-check-input" type="checkbox" name="taking_medications" value="true" id="takingMedsCheck">
+                    <label class="form-check-label" for="takingMedsCheck">
+                        Are you currently taking any regular medications?
+                    </label>
+                </div>
+                
+                <div id="medicationsContainer" style="display:none;">
+                    <div id="medList">
+                        <!-- Dynamic Medication Rows will appear here -->
+                    </div>
+                    <button type="button" class="btn btn-add-med" id="addMedRowBtn">
+                        <i class="mdi mdi-plus"></i> Add Medication
+                    </button>
+                </div>
+            </div>
+
+            <!-- Submit Button -->
+            <div class="text-center mb-5">
+                <button type="submit" class="btn btn-gold w-100 py-3 text-uppercase fs-5">
+                    Submit Registration
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Bootstrap JS Bundle -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Toggle medical care details textarea
+        document.getElementById('medCareCheck').addEventListener('change', function() {
+            document.getElementById('medCareDetails').style.display = this.checked ? 'block' : 'none';
+        });
+
+        // Toggle heart risk details textarea
+        document.getElementById('heartRiskCheck').addEventListener('change', function() {
+            document.getElementById('heartRiskDetails').style.display = this.checked ? 'block' : 'none';
+        });
+
+        // Toggle health risk details textarea
+        document.getElementById('healthRiskCheck').addEventListener('change', function() {
+            document.getElementById('healthRiskDetails').style.display = this.checked ? 'block' : 'none';
+        });
+
+        // Toggle PAR-Q specified fields
+        document.querySelectorAll('input[name="medical_conditions"]').forEach(radio => {
+            radio.addEventListener('change', function() {
+                document.getElementById('medCondDetails').style.display = (this.value === 'true') ? 'block' : 'none';
+            });
+        });
+        document.querySelectorAll('input[name="current_treatment"]').forEach(radio => {
+            radio.addEventListener('change', function() {
+                document.getElementById('treatDetails').style.display = (this.value === 'true') ? 'block' : 'none';
+            });
+        });
+        document.querySelectorAll('input[name="other_reason"]').forEach(radio => {
+            radio.addEventListener('change', function() {
+                document.getElementById('othDetails').style.display = (this.value === 'true') ? 'block' : 'none';
+            });
+        });
+
+        // Toggle medications section
+        document.getElementById('takingMedsCheck').addEventListener('change', function() {
+            const container = document.getElementById('medicationsContainer');
+            if (this.checked) {
+                container.style.display = 'block';
+                if (document.querySelectorAll('.med-row').length === 0) {
+                    addMedRow();
+                }
+            } else {
+                container.style.display = 'none';
+                document.getElementById('medList').innerHTML = '';
+            }
+        });
+
+        // Add dynamic medication row
+        document.getElementById('addMedRowBtn').addEventListener('click', addMedRow);
+
+        function addMedRow() {
+            const container = document.getElementById('medList');
+            const row = document.createElement('div');
+            row.className = 'med-row row g-2 align-items-center';
+            row.innerHTML = `
+                <div class="col-md-5 col-sm-12">
+                    <input type="text" name="med_name[]" required class="form-control form-control-sm" placeholder="Medication Name">
+                </div>
+                <div class="col-md-3 col-sm-6">
+                    <input type="text" name="med_dosage[]" class="form-control form-control-sm" placeholder="Dosage (e.g. 50mg)">
+                </div>
+                <div class="col-md-3 col-sm-6">
+                    <input type="text" name="med_frequency[]" class="form-control form-control-sm" placeholder="Frequency (e.g. Once daily)">
+                </div>
+                <div class="col-md-1 col-sm-12 text-center">
+                    <i class="mdi mdi-delete-outline remove-med-btn" onclick="this.closest('.med-row').remove()"></i>
+                </div>
+            `;
+            container.appendChild(row);
+        }
+    </script>
+</body>
+</html>
